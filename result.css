@@ -1,0 +1,941 @@
+:root{
+  /* 온보딩이 어둠 속 금빛이었다면, 결과는 빛 속의 먹빛이다 */
+  --ink:#17110c;          /* 제목 */
+  --body:#21180f;         /* 본문 */
+  --faint:#4d402e;        /* 보조 */
+  --gold:#89651c;         /* 항로·구분선 */
+  --gold-lit:#c09a45;
+  --haze:#f3ecdd;         /* 안개 */
+  --deep:#12100c;         /* 마지막 장 */
+
+  --serif:'Cormorant Garamond','Apple Garamond','Times New Roman',serif;
+  /* 본명조 — 굵기 7단계라 제목과 본문을 굵기만으로 가를 수 있다 */
+  --kr:'Noto Serif KR','Nanum Myeongjo','AppleMyungjo',serif;
+  --kr-d:'Noto Serif KR','Nanum Myeongjo','AppleMyungjo',serif;
+  --util:ui-monospace,'SF Mono',Menlo,monospace;
+
+  /* ── 타입 스케일 ── 모든 화면이 이 여섯 단계만 쓴다 ───────── */
+  --t-display:clamp(2.6rem,4.6vw,6.4rem);   /* 장 제목 */
+  --t-chapter:clamp(1.7rem,2.6vw,3.6rem);   /* 항목명 */
+  --t-lead:clamp(1.05rem,1.32vw,1.7rem);    /* 리드 */
+  --t-body:clamp(1rem,1.1vw,1.4rem);       /* 본문 */
+  --t-label:clamp(.76rem,.84vw,1.02rem);     /* 라벨·부제 */
+  --t-note:clamp(.66rem,.72vw,.86rem);         /* 주석·연도 */
+  --t-eyebrow:var(--t-label);
+  --lh-lead:1.95; --lh-body:2.0; --lh-title:1.2;
+  --tr-eyebrow:.3em;
+
+  --gutter:clamp(1.4rem,7vw,6rem);
+  --route:clamp(1.1rem,5vw,4rem);   /* 항로선이 지나는 좌측 위치 */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{overflow-x:hidden;max-width:100%}
+body{
+  background:var(--deep); color:var(--body);
+  font-family:var(--kr); font-weight:400; -webkit-font-smoothing:antialiased;
+  word-break:keep-all; overflow-wrap:break-word;
+}
+
+/* ── 배경: 바다는 고정되고 글이 그 위를 지나간다 ── */
+#sea{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--haze) url('assets/8b37de4948e5a6.jpg') center 58%/cover no-repeat}
+#sea video{width:100%;height:100%;object-fit:cover;object-position:center 58%}
+/* 시간대는 CSS 틴트가 아니라 실제 하늘로 바뀐다 */
+.hour{position:absolute;inset:0;background-size:cover;background-position:center 58%;opacity:0}
+#hDay{background-image:url('assets/ddcbf437386444.jpg')}
+#hDusk{background-image:url('assets/01fa942f753da8.jpg')}
+#hNight{background-image:url('assets/036a9cd8832d7b.jpg')}
+#tint{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(255,252,244,.10),rgba(255,246,228,.05));
+  transition:background .3s linear}
+#veil{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;background:var(--deep)}
+
+main{position:relative;z-index:3}
+
+/* ── 우측 챕터 인덱스 ── 지금 어디쯤인지, 무엇이 남았는지 ── */
+/* ── 우측 챕터 인덱스 ── 세로 눈금선 + 현재 위치 인디케이터 ───── */
+#idx{position:fixed;right:clamp(.8rem,1.4vw,1.6rem);top:50%;transform:translateY(-50%);
+  z-index:6;display:flex;flex-direction:column;gap:clamp(.9rem,1.9vh,1.4rem);opacity:.55;
+  transition:opacity .25s;
+  padding-left:clamp(1.4rem,2vw,2.2rem);text-align:left;pointer-events:auto}
+/* 눈금선 */
+#idx::before{content:'';position:absolute;left:0;top:.35rem;bottom:.35rem;width:1px;
+  background:rgba(255,255,255,.34)}
+#idx a{position:relative;display:block;text-decoration:none;
+  color:rgba(255,255,255,.72);transition:color .22s;
+  text-shadow:0 1px 8px rgba(20,16,8,.55)}
+/* 각 장의 눈금 점 */
+#idx a::before{content:'';position:absolute;left:calc(-1 * clamp(1.4rem,2vw,2.2rem) - 2px);
+  top:.52em;width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.55);transition:background .22s,box-shadow .22s}
+/* 현재 위치 — 점이 커지고 가로선이 뻗는다 */
+#idx a.on::before{background:var(--gold-lit);width:7px;height:7px;
+  left:calc(-1 * clamp(1.4rem,2vw,2.2rem) - 3px);
+  box-shadow:0 0 10px rgba(240,214,152,.9)}
+#idx a.on::after{content:'';position:absolute;
+  right:calc(100% + clamp(.5rem,.9vw,1rem));top:.72em;width:clamp(34px,4vw,72px);height:1px;
+  background:linear-gradient(to right,transparent,var(--gold-lit))}
+#idx a .n{font-family:var(--util);font-size:var(--t-note);letter-spacing:.14em;
+  display:block;line-height:1;opacity:.55}
+#idx a.on .n{opacity:1}
+#idx a .t{font-family:var(--util);font-size:calc(var(--t-note)*.86);letter-spacing:.12em;
+  display:none;margin-top:.3rem;white-space:nowrap}
+#idx a.on .t{display:block}
+#idx a.on{color:#f7ecd4}
+#idx a.on .n,#idx a.on .t{color:var(--gold-lit)}
+#idx a:hover{color:rgba(255,255,255,.9)}
+#idx:hover{opacity:1}
+/* 밝은 배경 구간에서는 어둡게 뒤집는다 */
+#idx.day::before{background:rgba(60,48,28,.34)}
+#idx.day a{color:rgba(46,36,20,.78);text-shadow:0 1px 10px rgba(255,252,244,.9)}
+#idx.day a::before{background:rgba(90,72,40,.62)}
+#idx.day a:hover{color:rgba(40,32,18,.92)}
+#idx.day a.on{color:#2b2214}
+#idx.day a.on .n,#idx.day a.on .t{color:#a8812c}
+#idx.day a.on::before{background:#c9a83f;box-shadow:0 0 9px rgba(201,168,63,.7)}
+#idx.day a.on::after{background:linear-gradient(to right,transparent,#c9a83f)}
+@media (max-width:900px){
+  #idx{display:none}
+}
+
+/* ── 항로선: 바다 위 금빛 길이 페이지로 이어진다 ── */
+
+/* ── 첫 장 ── 레퍼런스 비율 그대로: 글자 폭 64%, 조각상 높이 90%,
+   글자는 화면 위쪽에 두고 조각상이 그 한가운데를 지나간다 */
+#s1{position:relative;min-height:100svh;padding:0;max-width:none;display:block}
+.hero{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.bigline{position:absolute;top:12.5%;left:57.5%;transform:translateX(-50%);width:max-content;
+  font-family:var(--serif);font-weight:300;color:var(--ink);opacity:.72;
+  font-size:clamp(.82rem,2.6vw,2.05rem);letter-spacing:.56em;text-indent:.56em;white-space:nowrap}
+.big{position:absolute;top:18.6%;left:59%;transform:translateX(-50%);width:max-content;
+  font-family:var(--serif);font-weight:300;color:transparent;white-space:nowrap;
+  font-size:clamp(3.2rem,29.5vw,22rem);letter-spacing:.015em;text-indent:.015em;line-height:1.02;
+  background:linear-gradient(168deg,#cdad6e 0%,#eaddb8 22%,#a8813a 48%,#e3d0a4 72%,#9c7830 100%);
+  -webkit-background-clip:text;background-clip:text}
+.angel{position:absolute;left:53%;bottom:0;transform:translateX(-50%);
+  height:90svh;opacity:0;animation:angelIn .65s .08s ease forwards;width:auto;pointer-events:none;
+  filter:drop-shadow(0 24px 60px rgba(120,102,72,.14));
+  -webkit-mask-image:linear-gradient(to bottom,#000 74%,rgba(0,0,0,.6) 90%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 74%,rgba(0,0,0,.6) 90%,transparent 100%)}
+.heroText{position:absolute;left:0;top:17%;width:min(25rem,31vw);max-width:none;z-index:2;
+  padding:0 clamp(1.5rem,3vw,3rem) 0 var(--gutter)}
+.hLead{font-family:var(--kr-d);font-weight:500;font-size:clamp(1.1rem,1.85vw,1.62rem);
+  line-height:1.6;letter-spacing:.01em;color:var(--ink);margin-top:1.4rem}
+.heroText .lead{margin-top:1.6rem;font-size:var(--t-body);line-height:1.9}
+.arc{font-family:var(--util);font-size:.6rem;letter-spacing:.2em;color:var(--faint);
+  margin-top:2.2rem;line-height:1.7}
+/* 온보딩에서 넘어온 입력값 — 값이 없으면 아예 뜨지 않는다 */
+.entry{font-family:var(--util);font-size:.58rem;letter-spacing:.16em;color:var(--faint);
+  margin-top:.7rem;line-height:1.9;opacity:.85}
+.entry b{font-weight:400;color:var(--ink-2,#6a5a3c)}
+/* 결과 요약 — 분위기보다 먼저 결론을 준다 */
+.summary{position:absolute;left:var(--gutter);bottom:16%;z-index:6;display:flex;
+  gap:clamp(2rem,4vw,4rem);padding-top:clamp(1.2rem,2.4vh,1.8rem);
+  border-top:1px solid rgba(120,100,66,.32)}
+.summary dt{font-family:var(--util);font-size:var(--t-note);letter-spacing:.16em;
+  color:var(--faint)}
+.summary dd{font-family:var(--kr-d);font-size:calc(var(--t-chapter)*.6);font-weight:500;
+  color:var(--ink);margin-top:.5rem;letter-spacing:.02em;white-space:nowrap}
+/* 첫 장은 가로 1160px 아래부터 세로 적층으로 간다.
+   761~1160 구간이 데스크톱 절대배치를 그대로 쓰다가 요약이 화면 왼쪽 위로 튀어나갔다 */
+@media (max-width:1160px){
+  .summary{flex-direction:column;gap:1.1rem}
+  #s1{display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 4svh}
+  /* 데스크톱은 글자를 오른쪽(57~59%)으로 밀어 조각상과 겹치지만,
+     세로 화면에선 폭이 없어 잘린다 — 가운데로 되돌린다 */
+  .bigline{top:5.4%;left:50%;font-size:clamp(.66rem,3.1vw,.92rem);letter-spacing:.34em;text-indent:.34em}
+  /* MYTH를 키우고 올려 조각상 날개 뒤로 더 깊이 묻는다 */
+  .big{top:7.2%;left:50%;font-size:clamp(3.2rem,27.5vw,6.9rem);letter-spacing:.01em}
+  /* 조각상은 글자 아래로 내려 앉혀 MYTH의 획이 읽히게 */
+  .angel{left:50%;bottom:auto;top:14.2%;height:52svh;width:auto;max-width:none;
+    filter:drop-shadow(0 18px 44px rgba(120,102,72,.16)) contrast(1.07) saturate(.98);
+    transform:translateX(-50%);animation-duration:.38s;animation-delay:0s;
+    -webkit-mask-image:linear-gradient(to bottom,#000 56%,rgba(0,0,0,.42) 80%,transparent 95%);
+    mask-image:linear-gradient(to bottom,#000 56%,rgba(0,0,0,.42) 80%,transparent 95%)}
+  .nextCue{display:none}
+  /* 섹션 디바이더처럼 보이던 눈썹줄 — 선을 길게 늘이고 자간을 벌린다 */
+  #s1 .eyebrow{gap:1.4rem;margin-bottom:2.9rem}
+  #s1 .eyebrow em{letter-spacing:.46em}
+  #s1 .eyebrow span{max-width:none;opacity:.72}
+  .heroText{position:relative;left:auto;top:auto;transform:none;
+    width:auto;max-width:none;-webkit-mask-image:none;mask-image:none;
+    padding:6.5rem var(--gutter) 1.6rem;
+    background:linear-gradient(to top,rgba(244,238,226,.98) 0%,rgba(244,238,226,.97) 62%,
+      rgba(244,238,226,.84) 86%,transparent 100%)}
+  /* 요약이 화면 왼쪽 끝에 붙어 있던 문제 — 좌우 여백을 주고
+     본문 바탕을 이어받아 바다 위로 흘러나가게 한다 */
+  .summary{position:relative;left:auto;margin-top:0;gap:1.4rem;
+    padding:2.6rem var(--gutter) 0;
+    background:rgba(244,238,226,.97);border-top:0}
+  .summary dd{margin-top:.3rem;line-height:1.2}
+  .summary::after{content:'';position:absolute;left:0;right:0;top:100%;height:12svh;
+    background:linear-gradient(to bottom,rgba(244,238,226,.97),rgba(244,238,226,0));
+    pointer-events:none}
+  .summary dd{white-space:normal}
+  .entry{margin-top:.9rem}
+}
+.nextCue{position:absolute;left:var(--gutter);bottom:5.5%;z-index:2;display:flex;
+  align-items:center;gap:.8rem;font-family:var(--serif);font-size:.7rem;
+  letter-spacing:.28em;color:var(--faint);text-decoration:none}
+.nextCue span{width:26px;height:1px;background:rgba(154,118,39,.55)}
+.nextCue:hover{color:var(--ink)}
+@keyframes angelIn{to{opacity:1}}
+.fadeIn{opacity:0;animation:angelIn .5s .04s ease forwards}
+
+/* ── 안개 ── 읽는 구간은 바다가 흐려지며 글이 떠오른다 (종이가 아니다) */
+.mist{position:relative}
+.mist::before{content:'';position:absolute;left:-12vw;right:-12vw;top:-16vh;bottom:-16vh;z-index:-1;
+  background:rgba(246,241,230,.72);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 14%,#000 34%,#000 66%,rgba(0,0,0,.35) 86%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 14%,#000 34%,#000 66%,rgba(0,0,0,.35) 86%,transparent 100%)}
+.dark::before{background:rgba(8,10,16,.72)}
+
+/* ── 섹션 ── */
+section{padding:16vh clamp(6rem,14vw,13rem) 16vh var(--gutter);
+  max-width:1180px}
+.eyebrow{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.4rem}
+.eyebrow em{font-family:var(--util);font-style:normal;font-size:var(--t-note);
+  letter-spacing:.34em;color:var(--gold)}
+.eyebrow span{flex:1;max-width:120px;height:1px;background:linear-gradient(to right,rgba(154,118,39,.5),transparent)}
+h1,h2{font-family:var(--kr-d);font-weight:500;font-size:var(--t-display);line-height:var(--lh-title);color:var(--ink);letter-spacing:.08em;line-height:1.14}
+h1{font-size:var(--t-display);font-family:var(--serif)}
+h2{font-size:var(--t-display)}
+h3{font-family:var(--serif);font-weight:400;font-size:var(--t-chapter);color:var(--ink);
+  letter-spacing:.06em;line-height:var(--lh-title)}
+.sub{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:var(--tr-eyebrow);
+  color:var(--gold);margin-top:1rem}
+.lead{font-size:var(--t-lead);font-weight:400;line-height:var(--lh-lead);margin-top:2.2rem;max-width:27em;color:var(--body)}
+.lead strong{font-weight:600;color:var(--ink)}
+p+p{margin-top:1.1rem}
+.note{font-family:var(--util);font-size:.68rem;letter-spacing:.12em;color:var(--faint);margin-top:1.4rem}
+.rule{height:1px;background:linear-gradient(to right,rgba(154,118,39,.45),transparent);margin:3.4rem 0;max-width:340px}
+
+/* ── III 조각 ── 겹쳐진 한 장면. 좌우 분할이 아니다. ───────── */
+.frags{position:relative;min-height:100vh;overflow:visible;
+  max-width:none;padding:0;margin:0;display:block}
+.frags::after{display:none}
+
+
+/* 종이 — 좌측을 덮되 48%에서 62% 사이 넓은 안개로 사라진다 */
+.paper{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .36s ease;
+  background:linear-gradient(to right,
+    rgba(247,243,235,.98) 0%, rgba(247,243,235,.97) 34%, rgba(247,243,235,.93) 48%,
+    rgba(247,243,235,.78) 62%, rgba(247,243,235,.48) 74%,
+    rgba(244,239,229,.18) 86%, transparent 96%);
+}
+
+/* 성좌 도해 — 손으로 뜬 종이에 비치는 옛 잉크 정도로만 */
+.chartline{position:fixed;opacity:0;left:28%;top:4%;width:34%;height:84%;z-index:2;
+  pointer-events:none}
+.chartline svg{width:100%;height:100%;display:block}
+.chartline circle,.chartline line,.chartline path{fill:none;stroke:#7a6330;
+  stroke-width:.4;vector-effect:non-scaling-stroke;opacity:.22}
+
+/* 조각상 무대 — 각 신화가 지나갈 때 다른 대리석 인물이 나타난다 */
+.figureStage{position:fixed;opacity:0;right:clamp(6rem,11vw,13rem);top:53%;
+  transform:translateY(-50%);width:clamp(360px,34vw,600px);height:88vh;z-index:3;
+  pointer-events:none;transition:opacity .36s ease}
+.figureStage::before{content:'';position:absolute;inset:8% -12% -3% -16%;z-index:-1;
+  background:radial-gradient(ellipse at center,rgba(248,244,236,.5) 0%,
+    rgba(248,244,236,.24) 44%,rgba(248,244,236,.08) 66%,transparent 78%)}
+.mythFigure{position:absolute;right:0;top:50%;height:100%;max-width:100%;
+  transform:translateY(-50%) translateX(26px);object-fit:contain;opacity:0;
+  filter:grayscale(.1) sepia(.035) saturate(.68) brightness(.98) contrast(.88);
+  mix-blend-mode:multiply;transition:opacity .34s ease,transform .42s ease;
+  -webkit-mask-image:
+    linear-gradient(to bottom,transparent 0%,#000 7%,#000 88%,transparent 100%),
+    linear-gradient(to right,transparent 0%,#000 8%,#000 92%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    linear-gradient(to bottom,transparent 0%,#000 7%,#000 88%,transparent 100%),
+    linear-gradient(to right,transparent 0%,#000 8%,#000 92%,transparent 100%)}
+.mythFigure.on{opacity:.84;transform:translateY(-50%) translateX(0)}
+.mythFigure.inanna{right:2%;height:94%}
+.mythFigure.odysseus{right:-2%;height:98%}
+.mythFigure.gilgamesh{right:-4%;height:96%}
+/* 그림자·후광 없이 대기만으로 장면에 녹인다 */
+.relief-haze{position:fixed;opacity:0;left:59%;top:56%;transform:translate(-50%,-50%);
+  width:clamp(560px,44vw,880px);height:96vh;z-index:2;pointer-events:none;
+  background:
+    radial-gradient(ellipse 34% 30% at 22% 34%,rgba(248,244,235,.34),transparent 74%),
+    radial-gradient(ellipse 30% 26% at 80% 62%,rgba(246,249,251,.3),transparent 76%),
+    radial-gradient(ellipse 46% 20% at 46% 88%,rgba(250,247,239,.4),transparent 78%)}
+
+/* 대기 ── 석판과 배경 위를 함께 지난다. 이것이 없으면 석판만 떠 보인다. */
+.air{position:fixed;opacity:0;inset:0;z-index:4;pointer-events:none;
+  background:
+    linear-gradient(to right,rgba(246,241,231,.5) 0%,rgba(246,241,231,.3) 28%,
+      rgba(247,243,234,.12) 46%,rgba(248,245,238,.04) 62%,transparent 78%),
+    linear-gradient(to bottom,rgba(252,249,242,.16) 0%,transparent 26%,
+      transparent 62%,rgba(250,246,237,.24) 86%,rgba(249,245,235,.34) 100%)}
+/* 좌측 편집면 */
+.fragcopy{position:relative;margin-left:6%;width:min(43%,48rem);z-index:6;
+  padding:31vh 0 14vh}
+.fragcopy,.fragcopy p,.fragcopy h2,.fragcopy h3{ text-shadow:0 1px 12px rgba(250,247,238,.42) }
+.fragcopy .eyebrow{margin-bottom:clamp(.4rem,1.2vh,.9rem)}
+.fragcopy h2{font-size:clamp(3.1rem,4.5vw,5.6rem);line-height:1.16;
+  width:36vw;max-width:9.2em;letter-spacing:.01em}
+.fragcopy .lead{margin-top:1.2rem;font-size:var(--t-lead);
+  line-height:var(--lh-lead);max-width:36rem}
+.fraglist{margin-top:clamp(4.4rem,8.5vh,7.4rem);position:relative}
+.frag{position:relative;max-width:41.5rem;
+  padding:0 0 clamp(1.5rem,3.6vh,2.8rem)}
+/* 항목 사이 구분선 — 끝에 금색 마름모 */
+.frag+.frag{padding-top:clamp(3.8rem,8vh,6.2rem)}
+.frag+.frag::after{content:'';position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(to right,rgba(120,100,66,.24),rgba(120,100,66,.08),transparent)}
+.dot{display:none}
+
+.frag:last-child::before{display:none}
+.mark{display:none}
+.frag .no{font-family:var(--util);font-size:var(--t-note);letter-spacing:.24em;color:var(--gold);
+  margin-bottom:.45rem}
+.frag h3{margin-top:.15rem;font-size:clamp(2.35rem,3.25vw,4.35rem);letter-spacing:.035em;
+  line-height:var(--lh-title);font-weight:500;color:#130e09}
+.bookQuote{font-family:var(--serif);font-size:clamp(1.05rem,1.34vw,1.46rem);
+  line-height:1.46;font-weight:500;color:rgba(23,17,11,.9);margin-top:.55rem;max-width:34rem}
+.frag .role{font-family:var(--kr);font-size:var(--t-note);letter-spacing:.14em;
+  color:#3f3120;font-weight:600;margin-top:.85rem}
+.frag .link{font-family:var(--util);font-size:.58rem;letter-spacing:.1em;color:var(--faint);
+  margin-top:.3rem}
+.frag blockquote{font-size:var(--t-body);font-weight:500;line-height:var(--lh-body);
+  color:#3f3323;margin-top:.7rem;padding-left:.95rem;
+  border-left:1px solid rgba(137,101,28,.42)}
+.frag .found{font-size:var(--t-body);font-weight:500;line-height:var(--lh-body);
+  color:var(--body);margin-top:.55rem;max-width:35rem}
+.frag .found b{font-weight:600;color:var(--ink)}
+.frag .tlabel{font-family:var(--util);font-size:var(--t-note);letter-spacing:.16em;
+  color:var(--gold);margin-top:1.45rem}
+.frag .keys{font-family:var(--kr);font-size:var(--t-label);letter-spacing:.06em;
+  color:var(--body);margin-top:1rem}
+.traceGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.15rem;
+  margin-top:1.35rem;padding:1.05rem 0 1rem;
+  border-top:1px solid rgba(120,100,66,.18);
+  border-bottom:1px solid rgba(120,100,66,.12)}
+.traceGrid p{margin:0}
+.traceGrid span{display:block;font-family:var(--util);font-size:calc(var(--t-note)*.9);
+  letter-spacing:.12em;color:#80601c}
+.traceGrid b{display:block;margin-top:.45rem;font-family:var(--kr);font-size:calc(var(--t-note)*1.04);
+  font-weight:500;line-height:1.65;color:#4a3d2c}
+.tie{font-family:var(--kr);font-weight:300;font-size:var(--t-label);
+  letter-spacing:.06em;color:var(--faint);margin-top:.75rem;opacity:.95}
+.more{margin-top:.75rem}
+.more summary{list-style:none;cursor:pointer;font-family:var(--util);font-size:var(--t-note);
+  letter-spacing:.1em;color:var(--faint);opacity:.62;transition:opacity .3s,color .3s}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:' \002B';color:var(--gold);margin-left:.2em}
+.more[open] summary::after{content:' \2212'}
+.more summary:hover{color:var(--ink);opacity:1}
+.more p{font-size:var(--t-body);font-weight:400;line-height:var(--lh-body);
+  color:var(--body);margin-top:.5rem}
+.srcline{font-family:var(--util);font-size:var(--t-note);letter-spacing:.08em;color:var(--faint)}
+          /* 여백을 위해 근거 주석은 이 화면에서 접는다 */
+.closing{margin-top:clamp(1rem,2.4vh,2rem);width:100%;
+  font-size:clamp(.84rem,.94vw,.96rem);line-height:1.72}
+.closing b{font-weight:600;color:var(--ink)}
+
+@media (min-width:1161px) and (max-height:820px){
+  .fragcopy{top:4.5%}
+  .fragcopy .eyebrow{margin-bottom:.5rem}
+  .fragcopy .lead{margin-top:.65rem;line-height:var(--lh-lead);}
+  .fraglist{margin-top:clamp(3rem,6vh,4.8rem)}
+  .frag{padding-bottom:clamp(1.2rem,2.6vh,2rem)}
+  /* 항목 사이 구분선 — 끝에 금색 마름모 */
+.frag+.frag{padding-top:clamp(3rem,6vh,4.8rem)}
+.frag+.frag::after{content:'';position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(to right,rgba(120,100,66,.24),rgba(120,100,66,.08),transparent)}
+.dot{display:none}
+  .frag .role,.frag .link{margin-top:.16rem}
+  .closing{margin-top:.4rem;line-height:1.55}
+}
+@media (min-width:1161px) and (max-height:960px){
+  .fragcopy{top:5.5%}
+  .fragcopy h2{font-size:var(--t-display);line-height:var(--lh-title);width:37vw;max-width:none;}
+  .fraglist{margin-top:clamp(3.2rem,6.5vh,5.2rem)}
+  .frag{padding-bottom:clamp(1.2rem,2.8vh,2.2rem)}
+  /* 항목 사이 구분선 — 끝에 금색 마름모 */
+.frag+.frag{padding-top:clamp(3.1rem,6.5vh,5.2rem)}
+.frag+.frag::after{content:'';position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(to right,rgba(120,100,66,.24),rgba(120,100,66,.08),transparent)}
+.dot{display:none}
+  .frag .link{margin-top:.22rem}
+  .closing{margin-top:.5rem;line-height:1.6}
+}
+
+/* 좁은 화면에서는 겹칠 공간이 없다 — 세로로 쌓는다 */
+@media (max-width:1160px){
+  .frags{height:auto;min-height:0;overflow:visible;padding:9vh var(--gutter);
+    background:linear-gradient(to bottom,rgba(248,244,236,0) 0%,rgba(248,244,236,.94) 5%,
+      rgba(248,244,236,.9) 95%,rgba(248,244,236,0) 100%)}
+  /* 31vh 들여쓰기가 세로 화면에선 빈 판으로만 보인다 */
+  .fragcopy{margin-left:0;padding:2vh 0 5vh}
+  .paper,.chartline,.figureStage,.relief-haze,.air{display:none}
+  .fragcopy,.closing{position:static;width:auto;left:auto;top:auto}
+  .fragcopy h2{font-size:clamp(2.7rem,8vw,4.8rem);line-height:1.16;width:auto;max-width:none}
+  
+  .closing{margin-top:2.5rem;font-size:var(--t-lead)}
+  .dia{display:none}
+}
+
+/* ── III 추가 레이어 ── 왼쪽=기록/서사, 오른쪽=분석/궤적 ───── */
+.recur{margin-top:clamp(1.2rem,2.6vh,2rem);padding:clamp(.9rem,1.8vh,1.4rem) 0 0;
+  border-top:1px solid rgba(120,100,66,.22)}
+.recur .rl{font-family:var(--kr);font-size:var(--t-note);letter-spacing:.18em;
+  color:var(--faint)}
+.recur ul{list-style:none;margin-top:.7rem;display:grid;gap:.15rem}
+.recur li{position:relative;padding-left:1.9rem;font-size:var(--t-label);font-weight:300;
+  line-height:1.9;color:var(--body)}
+.recur li::before{content:'';position:absolute;left:0;top:.86em;width:14px;height:1px;
+  background:rgba(120,100,66,.45)}
+.constel{margin-top:.9rem;display:flex;flex-wrap:wrap;align-items:center;
+  gap:.55rem clamp(.8rem,1.6vw,1.6rem);font-family:var(--util);font-size:var(--t-note);
+  letter-spacing:.16em;color:var(--faint)}
+.constel span{position:relative;padding-left:.95rem}
+.constel span::before{content:'';position:absolute;left:0;top:50%;width:1px;height:9px;
+  background:rgba(120,100,66,.4);transform:translateY(-50%)}
+
+/* 해석 도식 — 석판 위에 얹지 않고 각 신화의 주석으로 낮춘다 */
+.dia{position:relative;left:auto;bottom:auto;width:min(100%,420px);z-index:5;
+  text-align:left;margin-top:.85rem;opacity:.62}
+.dia .dl{font-family:var(--kr);font-size:var(--t-note);letter-spacing:.22em;
+  color:var(--faint);white-space:normal}
+.dia .dl span{color:var(--faint);margin:0 .3em;opacity:.7}
+.dia svg{width:72%;height:auto;margin-top:.55rem;display:block}
+.dia svg line,.dia svg path{stroke:rgba(154,118,39,.5);stroke-width:1;fill:none;
+  vector-effect:non-scaling-stroke}
+.dia svg circle{fill:#d8b463;stroke:none}
+.dia .cells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.55rem;margin-top:.8rem}
+.dia .cells > div{border:none;padding:.2rem 0;text-align:left}
+.dia .cells .void .cv{color:var(--gold)}
+.dia .cn{font-family:var(--util);font-size:calc(var(--t-note)*.88);letter-spacing:.1em;color:var(--faint);opacity:.7}
+.dia .cv{font-size:calc(var(--t-note)*.94);line-height:1.4;color:var(--faint);margin-top:.35rem}
+.gauge{margin-top:.75rem;display:flex;justify-content:flex-start;gap:.5rem;
+  font-family:var(--util);font-size:var(--t-note);letter-spacing:.16em;color:var(--faint)}
+.gauge dt{opacity:.75}
+.gauge dd{display:flex;gap:.3rem;align-items:center}
+.gauge dd i{width:6px;height:6px;border-radius:50%;display:block}
+.gauge dd i.on{background:#c9a83f;box-shadow:0 0 5px rgba(201,168,63,.6)}
+.gauge dd i.off{border:1px solid rgba(154,118,39,.45)}
+
+/* 세 신화를 하나로 모으는 마지막 블록 */
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width:1160px){ .dia{position:relative;left:auto;bottom:auto;width:min(100%,420px);text-align:left} }
+
+/* ── 조각 표지 ── 바다 위에 제목만. 종이면 없음 ───────── */
+#fragcover{position:relative;min-height:100vh;max-width:none;overflow:hidden;
+  padding:0 clamp(6rem,14vw,13rem) 0 var(--gutter);display:flex;align-items:center}
+#fragcover::before{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(to right,
+    rgba(243,236,223,.9) 0%, rgba(243,236,223,.84) 26%, rgba(243,236,223,.7) 40%,
+    rgba(243,236,223,.48) 54%, rgba(243,236,223,.24) 68%, rgba(243,236,223,.07) 80%, transparent 90%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.5) 9%,#000 22%,#000 78%,rgba(0,0,0,.5) 91%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.5) 9%,#000 22%,#000 78%,rgba(0,0,0,.5) 91%,transparent 100%)}
+.covercopy{position:relative;z-index:6;width:min(66%,68rem)}
+.covercopy .eyebrow{margin-bottom:clamp(1.4rem,3vh,2.4rem)}
+.covercopy h2{font-size:var(--t-display);line-height:var(--lh-title)}
+.covercopy .lead{margin-top:clamp(1.6rem,3.4vh,2.6rem);line-height:1.95;max-width:none}
+@media (max-width:1160px){
+  #fragcover{padding:14vh var(--gutter);min-height:0;display:block}
+  #fragcover::before{display:none}
+  .covercopy{width:auto}
+}
+
+/* ── 세 이야기가 모이는 자리 ── 독립된 한 화면 ───────── */
+#thread{position:relative;min-height:120vh;max-width:none;overflow:hidden;
+  padding:0 clamp(6rem,14vw,13rem) 0 var(--gutter);display:flex;align-items:center}
+#thread::before{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(to right,
+    rgba(16,18,26,.9) 0%, rgba(16,18,26,.86) 30%, rgba(16,18,26,.78) 45%,
+    rgba(16,18,26,.62) 58%, rgba(16,18,26,.42) 70%, rgba(16,18,26,.2) 82%,
+    rgba(16,18,26,.06) 92%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.5) 9%,#000 22%,#000 78%,rgba(0,0,0,.5) 91%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.5) 9%,#000 22%,#000 78%,rgba(0,0,0,.5) 91%,transparent 100%)}
+/* 수렴 화면은 어둡다 — 밝은 장 사이에서 한 번 숨을 끊는다 */
+.threadcopy{position:relative;z-index:6;width:min(58%,60rem);color:#dcd3c0}
+.threadcopy h2{color:#f5eeda}
+.threadcopy .lead{color:#cfc6b2}
+.threadcopy .eyebrow em{color:#b9a77c}
+.threadcopy .eyebrow span{background:rgba(200,180,130,.4)}
+.threadcopy .verdict{color:#f7d98f}
+.threadcopy .verdict::before{background:rgba(240,214,152,.6)}
+.threadcopy .vsub{color:#b8b0a0}
+.threadcopy .eyebrow{margin-bottom:clamp(1.4rem,3vh,2.4rem)}
+.threadcopy h2{font-size:var(--t-display);line-height:var(--lh-title);white-space:nowrap}
+.threadcopy .lead{margin-top:clamp(1.4rem,3vh,2.2rem);line-height:1.95;max-width:none}
+/* 결론 — 화면에서 가장 큰 한 단어 */
+.verdict{margin-top:clamp(3.4rem,8vh,6rem);position:relative;
+  font-family:var(--serif);font-size:calc(var(--t-display)*.72);letter-spacing:.16em;
+  color:var(--ink);line-height:1.1}
+.verdict::before{content:'';position:absolute;left:0;top:calc(-1 * clamp(1.6rem,3.4vh,2.6rem));
+  width:42px;height:1px;background:rgba(154,118,39,.5)}
+.vsub{margin-top:clamp(1rem,2vh,1.6rem);font-size:var(--t-label);font-weight:300;
+  line-height:1.9;color:var(--faint)}
+@media (max-width:1160px){
+  #thread{padding:16vh var(--gutter);min-height:80vh;display:block}
+  .threadcopy h2{white-space:normal}
+  .threadcopy .verdict{font-size:calc(var(--t-display)*.5);letter-spacing:.1em;word-break:break-all}
+  /* 세로에서도 이 장은 어둡게 — 리듬이 사라지면 안 된다 */
+  #thread::before{left:0;right:0;
+    background:linear-gradient(to bottom,rgba(16,18,26,.4) 0%,rgba(16,18,26,.88) 22%,
+      rgba(16,18,26,.88) 78%,rgba(16,18,26,.4) 100%)}
+  .threadcopy{width:auto}
+}
+
+/* 마지막 — 여운 뒤에 '그래서 이제 뭘' ───────── */
+.ending{margin-top:clamp(3rem,7vh,5rem);max-width:34em}
+.ending .el{font-family:var(--util);font-size:var(--t-note);letter-spacing:.2em;
+  color:#c8b78a}
+.todo{list-style:none;margin-top:1.2rem;display:grid;gap:.75rem;counter-reset:t}
+.todo li{position:relative;padding-left:2.2rem;font-size:var(--t-body);line-height:1.85;
+  color:#e9e0cb;counter-increment:t}
+.todo li::before{content:counter(t,decimal-leading-zero);position:absolute;left:0;top:.15em;
+  font-family:var(--util);font-size:var(--t-note);color:#c9a83f;letter-spacing:.1em}
+.acts{display:flex;flex-wrap:wrap;gap:clamp(.8rem,1.6vw,1.4rem);
+  margin-top:clamp(2.2rem,5vh,3.6rem)}
+.primary{font-family:var(--kr);font-size:calc(var(--t-body)*1.02);font-weight:500;
+  letter-spacing:.04em;color:#1b1710;background:linear-gradient(160deg,#f0d698,#c9a83f);
+  border:none;padding:1.05em 2.4em;cursor:pointer;transition:filter .3s,transform .3s}
+.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.ghost{font-family:var(--kr);font-size:calc(var(--t-body)*1.02);font-weight:400;
+  letter-spacing:.04em;color:#e4dac4;background:none;border:1px solid rgba(228,218,196,.4);
+  padding:1.05em 2.2em;cursor:pointer;transition:background .3s,border-color .3s}
+.ghost:hover{background:rgba(228,218,196,.1);border-color:rgba(228,218,196,.7)}
+.arch{margin-top:clamp(1.6rem,3vh,2.4rem);font-family:var(--util);
+  font-size:var(--t-note);letter-spacing:.08em;color:#9e9483}
+
+/* 마지막 여운 */
+.coda{margin-top:clamp(2.6rem,6vh,4.4rem);padding-top:clamp(2rem,4vh,3rem);
+  border-top:1px solid rgba(214,180,110,.28);
+  font-size:calc(var(--t-body)*1.12);line-height:2;color:#f2e9d6;max-width:26em}
+
+/* ── 항해 ── 항로가 화면 정중앙을 관통하고 모든 글이 그 축 위에 있다 */
+.chart{text-align:center;max-width:none;margin:0 auto;
+  padding-left:var(--gutter);padding-right:var(--gutter)}
+.chart .lead{margin-left:auto;margin-right:auto}
+#route{position:relative;margin-top:clamp(4rem,10vh,7rem);padding-bottom:2rem}
+/* 항로 — CSS 막대 대신 손으로 그은 금선 이미지. 세로로 이어붙인다.
+   트랙과 진행선은 같은 경로를 그린 두 장이라 겹쳐도 어긋나지 않는다 */
+#route .line{position:absolute;left:50%;top:0;bottom:0;width:22px;margin-left:-11px;
+  transform:none;z-index:0;background:url('assets/be7574b63774c3.png') center top/22px auto repeat-y;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 3%,#000 97%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 3%,#000 97%,transparent 100%)}
+#route .line i{position:absolute;left:0;right:0;top:0;height:0;display:block;
+  background:url('assets/d7fa4d02f12035.png') center top/22px auto repeat-y;
+  background-color:transparent;box-shadow:none;
+  /* 진행이 끝나는 지점을 칼로 자르지 않고 트랙으로 흘려보낸다 */
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 72px),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 calc(100% - 72px),transparent 100%)}
+#stops{list-style:none;position:relative}
+
+/* ── 정박지 타이포 ── 도록의 대운 블록처럼 쌓는다 ──────────
+   눈썹줄(출처) → 번호 · 나이 · 연도 → 큰 영문 → 한글 자간 → 본문 */
+
+/* 눈썹줄: 글자 뒤로 가는 금선이 남은 폭을 채운다 */
+.stop .src{opacity:1;font-size:var(--t-note);letter-spacing:.2em;color:#8a7038}
+
+/* 번호는 크게, 연도는 세로 구분선 뒤에 */
+.stop .no{font-family:var(--serif);font-size:clamp(1.8rem,4.6vw,2.5rem);
+  font-weight:400;letter-spacing:.06em;line-height:1;color:#9a7627;opacity:1;margin-top:0}
+.stop .yr{font-size:var(--t-note);letter-spacing:.18em;color:#7d6a48;margin-top:0}
+
+/* 영문 제목 — 표지 MYTH와 같은 금박 그라디언트 */
+.stop h3{font-family:var(--serif);font-weight:300;letter-spacing:.1em;
+  background:linear-gradient(168deg,#cdad6e 0%,#eaddb8 20%,#a8813a 48%,#e3d0a4 74%,#9c7830 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.stop.here h3{background:linear-gradient(168deg,#e6cc8d 0%,#fff4d6 20%,#c9a23f 46%,#f2e4bd 74%,#b08828 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* 한글 부제 — 자간을 벌리고 뒤로 금선 */
+.stop .kr{letter-spacing:.42em;color:#6e5c3d}
+
+/* 900px 아래에선 글이 가운데 정렬인데 항로선도 가운데라 글자를 뚫고 지나갔다.
+   선을 왼쪽 레일로 보내고 글을 왼쪽 정렬로 세운다 */
+@media (max-width:899px){
+  #s3{text-align:left}
+  #route{padding-left:2.6rem}
+  #route .line{left:.7rem;margin-left:-11px;transform:none}
+  /* 출처를 맨 위 눈썹줄로 올리고, 번호와 연도를 한 줄에 세운다 */
+  .stop{padding-left:0;display:grid;grid-template-columns:auto minmax(0,1fr);
+    grid-template-areas:'src src' 'no yr' 'h3 h3' 'kr kr' 'ds ds';
+    align-items:baseline;column-gap:1.1rem;row-gap:0}
+  .stop .src{grid-area:src;margin-top:0;margin-bottom:1.3rem;
+    display:flex;align-items:center;gap:.9rem}
+  .stop .src::after{content:'';flex:1;height:1px;
+    background:linear-gradient(to right,rgba(154,118,39,.42),rgba(154,118,39,.08),transparent)}
+  .stop .no{grid-area:no}
+  .stop .yr{grid-area:yr;padding-left:1.1rem;border-left:1px solid rgba(154,118,39,.34)}
+  .stop h3{grid-area:h3;margin-top:1rem}
+  .stop .kr{grid-area:kr;margin-top:.9rem;display:flex;align-items:center;gap:1rem}
+  .stop .kr::after{content:'';flex:1;height:1px;
+    background:linear-gradient(to right,rgba(154,118,39,.34),transparent)}
+  /* 파일 뒤쪽에 .stop .ds가 한 번 더 선언돼 있어 우선순위를 올린다 */
+  #stops .stop .ds{grid-area:ds;margin:1.5rem 0 0;justify-self:start;max-width:none}
+  .star{position:absolute;left:-2.6rem;top:-.15rem;margin:0;width:1.4rem;height:1.4rem}
+  .stop.here .star{width:2.1rem;height:2.1rem;left:-2.95rem;top:-.5rem}
+  .stop .ds{margin-left:0;margin-right:0;max-width:none}
+  .stop h3{font-size:calc(var(--t-chapter)*.86);letter-spacing:.1em}
+}
+.stop{position:relative;z-index:1;padding:0 0 clamp(3rem,8vh,5.5rem);
+  opacity:0;transform:translateY(12px);transition:opacity .42s ease,transform .42s ease}
+.stop.on{opacity:1;transform:none}
+
+/* 넓은 화면에서는 별만 항로 위에 남고 글이 좌우로 갈린다.
+   글은 항로 쪽으로 붙여 정렬해 축이 흐트러지지 않게 한다. */
+@media (min-width:900px){
+  /* 항로가 화면 정중앙에 오도록 좌우를 대칭으로 */
+  .chart{padding-left:clamp(3rem,7vw,7rem);padding-right:clamp(3rem,7vw,7rem)}
+  .stop{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;
+    column-gap:clamp(1.6rem,3vw,3.2rem);padding-bottom:clamp(2.4rem,6vh,4.2rem)}
+  .star{grid-column:2;grid-row:1;margin:0}
+  .stop > :not(.star){grid-column:1;max-width:23em;justify-self:end;text-align:right}
+  .stop:nth-child(even) > :not(.star){grid-column:3;justify-self:start;text-align:left}
+  .stop .ds{margin-left:0;margin-right:0;max-width:none}
+  .stop .no{margin-top:.2rem}
+  /* 현재 위치 별이 격자 폭을 먹어 제목이 깨진다 — 이 화면에서만 줄인다 */
+  .stop.here .star{width:clamp(84px,8.5vw,120px)}
+  .stop.here{column-gap:clamp(1rem,2vw,2.2rem)}
+  .stop h3{white-space:nowrap}
+}
+.stop:last-child{padding-bottom:2rem}
+.star{display:block;margin:0 auto;width:clamp(58px,6vw,86px);aspect-ratio:1;
+  background:url('assets/f3bd90e0077e89.png') center/contain no-repeat;pointer-events:none}
+.stop.here .star{width:clamp(92px,10vw,140px);background-image:url('assets/b2e0f3bffcbcb6.png')}
+.stop .no{font-family:var(--util);font-size:var(--t-note);letter-spacing:.24em;color:var(--gold);
+  margin-top:-.2rem}
+.stop .yr{font-family:var(--util);font-size:var(--t-note);letter-spacing:.12em;color:var(--faint);
+  margin-top:.5rem}
+.stop h3{margin-top:.7rem;font-size:var(--t-chapter);line-height:var(--lh-title);letter-spacing:.16em}
+.stop .kr{font-family:var(--kr-d);font-weight:400;font-size:var(--t-label);color:var(--faint);
+  letter-spacing:.3em;margin-top:.45rem}
+.stop .ds{font-size:var(--t-body);font-weight:400;line-height:var(--lh-body);color:var(--body);
+  margin:1.2rem auto 0;max-width:26em}
+.stop .src{font-family:var(--util);font-size:var(--t-note);letter-spacing:.1em;color:var(--faint);
+  margin-top:1.1rem;opacity:.8}
+.stop.here h3{color:var(--gold)}
+.stop .ds{font-size:var(--t-body);font-weight:400;line-height:var(--lh-body);color:var(--body);margin-top:.45rem;max-width:22em}
+
+/* ── 04 시련과 조력: 물에서 오는 것 / 빛에서 오는 것 ── */
+
+@media (min-width:860px){  }
+
+
+
+
+
+
+/* ── IV 시련과 조력 ── 밤으로 떨어지지 않게, 물과 빛을 밝은 면으로 정리 */
+#s4{position:relative;min-height:100vh;max-width:none;overflow:hidden;
+  padding:11vh clamp(6rem,10vw,12rem);display:flex;flex-direction:column;
+  align-items:center;text-align:center}
+#s4::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 48% 58% at 50% 43%, rgba(250,247,238,.86) 0%, rgba(250,247,238,.66) 38%, rgba(250,247,238,.34) 64%, transparent 88%),
+    linear-gradient(to right, transparent 0%, rgba(250,247,238,.12) 18%, rgba(250,247,238,.36) 38%,
+      rgba(250,247,238,.44) 50%, rgba(250,247,238,.32) 62%, rgba(250,247,238,.1) 82%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.82) 9%,#000 20%,#000 86%,rgba(0,0,0,.66) 96%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.82) 9%,#000 20%,#000 86%,rgba(0,0,0,.66) 96%,transparent 100%)}
+#s4::after{content:'';position:absolute;inset:12% 0 0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(112deg, transparent 0 39%, rgba(255,235,177,.14) 40%, transparent 53%),
+    radial-gradient(ellipse 48% 18% at 50% 52%, rgba(255,240,191,.12) 0%, transparent 72%);
+  mix-blend-mode:screen;opacity:.48}
+#s4 > *{position:relative;z-index:1}
+#s4 .eyebrow{justify-content:center;margin-left:auto;margin-right:auto;max-width:min(72%,58rem)}
+#s4 .eyebrow span{flex:0 1 clamp(5rem,12vw,12rem)}
+#s4 .lead{max-width:min(58%,50rem);margin-left:auto;margin-right:auto;
+  margin-top:clamp(1.2rem,2.4vh,2rem);text-align:center}
+#s4 h2{max-width:min(76%,72rem);margin-left:auto;margin-right:auto;text-align:center}
+/* 두 단 나란히 — 물에서 오는 것 / 빛에서 오는 것 */
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(3.2rem,6vw,6.8rem);margin-top:clamp(3rem,6vh,5rem);
+  width:min(82vw,78rem);max-width:78rem;align-items:start;position:relative;
+  padding-top:clamp(1.8rem,3vh,2.6rem);border-top:1px solid rgba(137,101,28,.28)}
+.pair::before{content:'';position:absolute;left:50%;top:clamp(1.8rem,3vh,2.6rem);
+  bottom:.35rem;width:1px;background:linear-gradient(to bottom, rgba(137,101,28,.3), rgba(137,101,28,.08) 72%, transparent)}
+.pair::after{content:'';position:absolute;inset:-2.6rem -7vw -4.2rem;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 48% 48%, rgba(250,247,238,.78) 0%,
+    rgba(250,247,238,.5) 42%, rgba(250,247,238,.22) 64%, transparent 86%);
+  filter:blur(18px)}
+
+.side{position:relative;padding:0;border:none;background:none;text-align:left}
+.side::before{content:'';display:block;width:42px;height:2px;margin-bottom:clamp(1.1rem,2vh,1.6rem);
+  background:rgba(137,101,28,.64)}
+.side.light::before{background:rgba(211,176,84,.78)}
+.side .kind{font-family:var(--kr);font-weight:500;font-size:var(--t-note);
+  letter-spacing:.18em;color:#534434;text-shadow:0 1px 12px rgba(250,247,238,.7)}
+.side .who{font-family:var(--serif);font-size:clamp(2rem,2.8vw,3.4rem);letter-spacing:.045em;
+  line-height:var(--lh-title);color:var(--ink);margin-top:.6rem;white-space:nowrap}
+.side.dark .who{color:#202632}
+.side.light .who{color:#816019}
+.side p{font-size:var(--t-body);font-weight:500;line-height:1.86;
+  margin-top:clamp(1rem,1.9vh,1.55rem);max-width:none;text-align:left;color:#2d2418}
+.side p b{font-weight:700;color:#15100b}
+.side p+p{position:relative}
+
+.side .note{font-family:var(--util);font-size:var(--t-note);letter-spacing:.06em;
+  color:#756349;margin-top:clamp(1.8rem,3.4vh,2.7rem);text-align:left;opacity:1;
+  padding-top:clamp(1rem,1.8vh,1.4rem);position:relative}
+.side .note::before{content:'';position:absolute;left:0;top:0;width:100%;height:1px;
+  background:linear-gradient(to right,rgba(137,101,28,.38),rgba(137,101,28,.1),transparent)}
+
+/* ── 05 완성된 신화 ── */
+.chap{position:relative;max-width:min(52%,50rem);
+  margin-top:clamp(2.6rem,6vh,4.6rem);padding:0}
+.chap .no{font-family:var(--util);font-size:var(--t-note);letter-spacing:.2em;
+  color:var(--faint);opacity:.85}
+.chap h3{margin-top:.9rem;font-size:var(--t-chapter);line-height:var(--lh-title);
+  letter-spacing:.02em;font-family:var(--serif)}
+.chap .kr{font-family:var(--kr-d);font-weight:400;font-size:var(--t-label);
+  color:var(--faint);margin-top:.7rem;letter-spacing:.02em}
+.chap p{font-size:var(--t-body);font-weight:400;line-height:var(--lh-body);margin-top:1.6rem;max-width:28em}
+
+/* ── 장문 화면의 편집 요소 ────────────────────────────
+   본문 5문단이 같은 크기로 이어지면 소설 PDF처럼 읽힌다.
+   장마다 큰 문장 → 작은 본문 → 그래픽 → 본문 → 색인의 세 층으로 끊는다 */
+
+/* 장 머리 — 로마숫자와 영문 제목을 한 줄에 놓고 금선으로 잇는다 */
+.chap .no{display:block;font-family:var(--serif);
+  font-size:clamp(1.5rem,5vw,2.1rem);letter-spacing:.34em;color:#9a7627;opacity:1}
+.chap h3{display:block;margin-top:.5rem;font-family:var(--serif);font-weight:300;
+  font-size:clamp(2.3rem,9vw,3.9rem);line-height:1.06;letter-spacing:.06em;
+  background:linear-gradient(168deg,#cdad6e 0%,#eaddb8 20%,#a8813a 48%,#e3d0a4 74%,#9c7830 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.chap .kr{display:flex;align-items:center;gap:1rem;letter-spacing:.3em;margin-top:.9rem}
+.chap .kr::after{content:'';flex:1;height:1px;
+  background:linear-gradient(to right,rgba(154,118,39,.34),transparent)}
+
+/* 장 대표 심볼 — 장마다 다른 시각적 문장부호 */
+.chapSym{margin-bottom:clamp(1.4rem,3vh,2.2rem);opacity:.85}
+.chapSym svg{display:block;width:clamp(7rem,34vw,11rem);height:auto;overflow:visible}
+.chapSym path{fill:none;stroke:var(--gold);stroke-width:1.1;stroke-linecap:round;opacity:.62}
+.chapSym circle{fill:var(--gold);opacity:.8}
+.chap:nth-of-type(5) .chapSym path{fill:var(--gold);stroke:none;opacity:.55}
+
+/* 큰 문장 — 이 장이 하는 말 하나. 본문보다 두 배 크게 */
+.chap .pull{font-family:var(--kr-d);font-weight:500;
+  font-size:clamp(1.62rem,6.2vw,2.5rem);line-height:1.46;letter-spacing:-.005em;
+  color:var(--ink);margin-top:clamp(2.2rem,4.5vh,3.4rem);max-width:15em;
+  word-break:keep-all;text-indent:0}
+.chap .pull::before{content:'';display:block;width:2.4rem;height:1px;
+  background:var(--gold);opacity:.75;margin-bottom:clamp(1.3rem,2.6vh,2rem)}
+
+/* 본문은 한 걸음 물러선다 — 작게, 넓은 행간, 옅은 먹 */
+.chap .pull~p{font-size:clamp(.86rem,3.4vw,.97rem);line-height:2.05;color:#4d4132}
+
+/* 본문은 큰 문장보다 물러선다 — 폭을 줄이고 회색으로 */
+.chap p{max-width:34em}
+.chap .pull+p{margin-top:clamp(1.6rem,3vh,2.4rem)}
+
+/* 문단 사이 쉼표 — 희미한 항로 한 조각 */
+.chapArc{margin:clamp(2.4rem,5vh,3.6rem) 0 clamp(2rem,4vh,3rem);
+  max-width:34em;opacity:.5}
+.chapArc svg{display:block;width:min(15rem,62%);height:2.6rem;overflow:visible}
+.chapArc path{fill:none;stroke:var(--gold);stroke-width:.8;opacity:.55;
+  stroke-dasharray:3 5}
+.chapArc circle{fill:var(--gold);opacity:.85}
+.chapArc.alt{display:flex;justify-content:flex-end}
+.chapArc.alt svg{width:min(13rem,54%)}
+
+/* 정적 장면 — 글을 거의 비우고 바다만 남긴다. 긴 본문 사이의 숨 */
+.still{position:relative;margin:clamp(6rem,14vh,11rem) 0 clamp(5rem,11vh,9rem);
+  padding:clamp(7rem,16vh,12rem) 0;text-align:center;
+  background:url('assets/8b37de4948e5a6.jpg') center/cover no-repeat;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 84%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 84%,transparent 100%)}
+.still::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(246,241,230,.42) 0%,transparent 78%)}
+.still > *{position:relative}
+.stillLabel{font-family:var(--util);font-size:var(--t-note);letter-spacing:.42em;
+  text-indent:.42em;color:#6d5a33}
+.stillArc{display:block;width:min(19rem,64%);height:3.4rem;margin:1.6rem auto 0;overflow:visible}
+.stillArc path{fill:none;stroke:var(--gold);stroke-width:1;opacity:.7}
+.stillArc circle{fill:var(--gold);opacity:.9}
+.stillKr{font-family:var(--kr-d);font-weight:400;font-size:var(--t-label);
+  letter-spacing:.04em;color:#4b3f2c;margin-top:1.5rem;word-break:keep-all}
+
+/* 장 색인 — 도록의 분류표처럼 */
+.chap .idx{font-family:var(--util);font-size:var(--t-note);letter-spacing:.26em;
+  color:var(--gold);opacity:.72;margin-top:clamp(2.2rem,4.5vh,3.4rem);
+  padding-top:clamp(.9rem,1.8vh,1.3rem);max-width:none;
+  border-top:1px solid rgba(154,118,39,.22)}
+
+/* ── V 완성된 신화 ── 카드가 점점 정교해지고 배경은 밤으로 간다 ── */
+#s5{position:relative;min-height:100vh;max-width:none;overflow:hidden;
+  padding:12vh clamp(6rem,14vw,13rem) 12vh var(--gutter)}
+#s5::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(to right,
+    rgba(245,239,228,1) 0%, rgba(245,239,228,.98) 28%, rgba(245,239,228,.95) 40%,
+    rgba(245,239,228,.88) 50%, rgba(245,239,228,.72) 58%, rgba(245,239,228,.48) 67%,
+    rgba(245,239,228,.24) 76%, rgba(245,239,228,.08) 86%, transparent 95%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.5) 9%,#000 22%,#000 78%,rgba(0,0,0,.5) 91%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.5) 9%,#000 22%,#000 78%,rgba(0,0,0,.5) 91%,transparent 100%)}
+#s5 > *{position:relative;z-index:1}
+#s5 .eyebrow,#s5 .lead{max-width:min(52%,52rem)}
+#s5 h2{max-width:min(62%,64rem)}
+#s5 .lead{text-align:left}
+
+/* 장 사이 장식 */
+.chapmark{display:none}
+
+/* 카드 — 상아빛 판, 둥근 모서리, 이중 금테 */
+.chap{position:relative;max-width:min(52%,50rem);
+  margin-top:clamp(2.6rem,6vh,4.6rem);padding:0}
+/* 안쪽 금선 */
+
+/* 상단 중앙 장식 */
+
+.chap .no{font-family:var(--util);font-size:var(--t-note);letter-spacing:.2em;
+  color:var(--faint);opacity:.85}
+.chap h3{margin-top:.9rem;font-size:var(--t-chapter);line-height:var(--lh-title);
+  letter-spacing:.02em;font-family:var(--serif)}
+.chap .kr{font-family:var(--kr-d);font-weight:400;font-size:var(--t-label);
+  color:var(--faint);margin-top:.7rem;letter-spacing:.02em}
+/* 부제 아래 가는 구분선 */
+
+.chap p{font-size:var(--t-body);font-weight:400;line-height:var(--lh-body);
+  margin-top:clamp(1.2rem,2.2vh,1.9rem);max-width:none}
+.chap p b{font-weight:600;color:var(--ink)}
+
+/* 마지막 장은 더 크고 정교하게 — 도착하지 않은 자리 */
+.chap.last{max-width:min(60%,58rem);margin-top:clamp(9rem,22vh,16rem);
+  padding-top:clamp(3rem,7vh,5rem);border-top:1px solid rgba(154,118,39,.4)}
+.chap.last .no{color:var(--gold);letter-spacing:.4em}
+.chap.last h3{font-size:calc(var(--t-chapter)*1.7);letter-spacing:.06em;margin-top:1.2rem}
+.chap.last .kr{font-size:var(--t-lead);color:var(--gold);margin-top:1rem;opacity:.9}
+.chap.last p{font-size:calc(var(--t-body)*1.16);line-height:1.95;
+  margin-top:clamp(2rem,4vh,3rem)}
+/* 마지막 문장은 크게 — 도착은 예언되지 않는다 */
+.chap.last p:last-child{font-size:calc(var(--t-chapter)*.62);line-height:1.7;
+  color:var(--ink);margin-top:clamp(2.4rem,5vh,3.6rem);max-width:22em}
+.chap.last p:last-child b{color:var(--ink);font-weight:600}
+/* 마지막 장은 밤 배경 위에 온다 — 밝은 글씨로 뒤집는다 */
+.chap.last p:last-child b{color:#8a6a1e;font-weight:600}
+
+
+.chap.last h3{font-size:calc(var(--t-chapter)*1.16)}
+
+@media (max-width:1160px){
+  #s4{padding:12vh var(--gutter)}
+  #s4::before{display:block;background:
+    radial-gradient(ellipse 86% 64% at 50% 34%, rgba(250,247,238,.8) 0%, rgba(250,247,238,.54) 50%, transparent 86%),
+    linear-gradient(to bottom, rgba(250,247,238,.16), rgba(250,247,238,.36) 46%, rgba(250,247,238,.18))}
+  #s4::after{inset:8% 0 0 0;opacity:.34}
+  #s4 .eyebrow,#s4 h2,#s4 .lead{max-width:none}
+  h2,.hLead,.lead,.chap h3{word-break:keep-all}   /* '것'만 홀로 넘어가던 줄바꿈 */
+  .pair{grid-template-columns:1fr;gap:clamp(2.8rem,7vh,4.5rem);max-width:none}
+  .pair::before{display:none}
+  .pair::after{inset:-2rem -2rem -3rem;filter:blur(14px)}
+  .side .who{white-space:normal}
+  #s5{padding:12vh var(--gutter)}
+  #s5::before{display:block;
+    background:linear-gradient(to bottom,rgba(245,239,228,0) 0%,rgba(245,239,228,.94) 4%,
+      rgba(245,239,228,.94) 94%,rgba(245,239,228,0) 100%);
+    -webkit-mask-image:none;mask-image:none}
+  #s5 .eyebrow,#s5 h2,#s5 .lead{max-width:none}
+  /* 마지막 장 전용 규칙(60% 폭·9rem 여백·윗줄)이 모든 .chap에 걸려 있었다.
+     390px에서 본문이 201px 폭으로 눌리고 장마다 빈 칸이 생기던 원인 */
+  .chap{max-width:none;margin-top:clamp(3.4rem,7vh,5.2rem);padding-top:0;border-top:0}
+  .still{margin-left:calc(-1*var(--gutter));margin-right:calc(-1*var(--gutter))}
+  .chap.last{max-width:none;margin-top:clamp(5rem,12vh,8rem);
+  padding-top:clamp(2.4rem,5vh,3.4rem);border-top:1px solid rgba(154,118,39,.4)}
+.chap.last .no{color:var(--gold);letter-spacing:.4em}
+.chap.last h3{font-size:calc(var(--t-chapter)*1.7);letter-spacing:.06em;margin-top:1.2rem}
+.chap.last .kr{font-size:var(--t-lead);color:var(--gold);margin-top:1rem;opacity:.9}
+.chap.last p{font-size:calc(var(--t-body)*1.16);line-height:1.95;
+  margin-top:clamp(2rem,4vh,3rem)}
+/* 마지막 문장은 크게 — 도착은 예언되지 않는다 */
+.chap.last p:last-child{font-size:calc(var(--t-chapter)*.62);line-height:1.7;
+  color:var(--ink);margin-top:clamp(2.4rem,5vh,3.6rem);max-width:22em}
+.chap.last p:last-child b{color:var(--ink);font-weight:600}
+/* 마지막 장은 밤 배경 위에 온다 — 밝은 글씨로 뒤집는다 */
+.chap.last p:last-child b{color:#8a6a1e;font-weight:600}
+  .chapmark{display:none}
+}
+
+/* ── 06 아직 쓰이지 않은 장: 여기서 해가 진다 ── */
+#dusk{color:#d9cdb4;padding-top:34vh}
+#dusk h2,#dusk h3{color:#f2e7cf}
+#dusk .sub,#dusk .eyebrow em,#dusk .chap .no{font-family:var(--util);font-size:var(--t-note);letter-spacing:.2em;
+  color:var(--faint);opacity:.85}
+#dusk .note{color:#8d7f66}
+#dusk .lead{color:#efe6d2}
+#dusk .lead strong{color:#f6ecd6}
+#more{margin-top:2.8rem;font-family:var(--serif);font-size:var(--t-eyebrow);
+  letter-spacing:var(--tr-eyebrow);color:var(--gold-lit);background:none;
+  border:1px solid rgba(192,154,69,.45);padding:.85rem 1.5rem;cursor:pointer;
+  transition:background .3s,color .3s}
+#more:hover{background:rgba(192,154,69,.14);color:#fbf3e2}
+#moreBody{display:none;margin-top:2.4rem;max-width:32em}
+#moreBody.open{display:block}
+#moreBody dt{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:.28em;
+  color:var(--gold-lit);margin-top:1.8rem}
+#moreBody dd{font-size:var(--t-body);font-weight:400;line-height:var(--lh-body);margin-top:.6rem;color:#cdc0a6}
+
+footer{position:relative;z-index:3;padding:14vh clamp(6rem,14vw,13rem) 12vh var(--gutter);
+  color:#8d7f66;font-family:var(--util);font-size:.68rem;letter-spacing:.12em}
+footer .acts{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:2.4rem}
+footer button{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:var(--tr-eyebrow);
+  color:var(--gold-lit);background:none;border:1px solid rgba(192,154,69,.45);
+  padding:.85rem 1.5rem;cursor:pointer;transition:background .3s,color .3s}
+footer button:hover{background:rgba(192,154,69,.14);color:#fbf3e2}
+
+/* ── 등장 ── */
+.rise{opacity:0;transform:translateY(10px);transition:opacity .42s ease,transform .42s ease}
+.rise.on{opacity:1;transform:none}
+:focus-visible{outline:1px solid var(--gold-lit);outline-offset:3px}
+
+@media (max-width:760px){
+  html{scroll-behavior:auto}
+  section{padding:12vh 3.2rem 12vh var(--gutter)}
+  /* 세로에선 겹칠 공간이 없다 — 위는 타이포·조각상, 아래는 글 */
+  .hLead{font-size:clamp(1.2rem,5.4vw,1.6rem);line-height:1.55;margin-top:.4rem}
+  .heroText .lead{margin-top:2.1rem}
+  .arc{margin-top:2.6rem;font-size:.54rem;opacity:.62}
+
+  .rule{margin:2.6rem 0}
+  .stop{padding-left:1.6rem}
+  .stop,.rise{transform:translateY(6px);transition:opacity .22s ease,transform .22s ease}
+  .stop .ds{font-size:.82rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rise{opacity:1;transform:none;transition:none}
+  #sea video{display:none}
+}
+
+/* Keep the original ocean scene; strengthen only the reading layer. */
+.frag .found,.more p,.side p{color:var(--body)}
+.bookQuote{color:#403526}
+.more summary{opacity:1;min-height:44px;display:flex;align-items:center}
+.traceGrid span,.traceGrid b,.frag .role,.note,.srcline{font-size:max(12px,var(--t-note))}
+@media (max-width:760px){
+  .stop .ds,.frag .found,.frag blockquote,.more p{font-size:1rem;line-height:1.9}
+  .arc,.entry{font-size:.75rem;opacity:1}
+}
+@media print{
+  @page{margin:18mm}
+  body{background:white;color:#17110c}
+  #sea,#tint,#veil,#idx,.hero,.paper,.figureStage,.air,.relief-haze,.chartline,.acts,.nextCue,#more{display:none!important}
+  section,#s1,#s2,#s3,#s4,#s5,#thread,#dusk{position:static;display:block;max-width:none;min-height:0;height:auto;padding:24px 0;background:none;color:#17110c}
+  section::before,section::after,.summary::after{display:none!important}
+  .heroText,.summary,.fragcopy,.threadcopy{position:static;width:auto;max-width:none;padding:0;margin:20px 0;background:none;color:#17110c}
+  .rise,.stop,.angel{opacity:1!important;transform:none!important;animation:none!important;transition:none!important}
+  h2,h3,.threadcopy h2,.threadcopy .lead,.verdict,.vsub,.side p,.coda,.todo li,#dusk .lead,#dusk strong{color:#17110c!important;background:none!important;-webkit-text-fill-color:#17110c}
+  .frag,.chap{break-before:page;max-width:none;margin:24px 0;padding:0}
+  .chap p{max-width:none;color:#17110c}
+  .chapArc,.chapSym,.chapmark,.still,.star,#route .line{display:none}
+  #moreBody{display:block!important;color:#17110c}
+  #moreBody dt,#moreBody dd{color:#17110c!important}
+  footer{background:white;color:#17110c}
+}

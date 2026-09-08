@@ -1,0 +1,152 @@
+/* Editorial emphasis over the existing sea, without changing the voyage. */
+.fragcopy h2{font-size:48px;line-height:1.35;letter-spacing:0}
+.fragcopy .lead{font-size:16px;line-height:1.9;max-width:30em}
+.frag h3{font-size:64px;line-height:1.05;letter-spacing:0;font-weight:500}
+.frag .role{font-size:12px;margin-top:18px;letter-spacing:0;color:var(--gold)}
+.frag blockquote{font-size:17px;line-height:1.9;margin-top:12px;font-weight:400}
+.frag .tlabel{display:none}
+.frag .impact-line,.side .impact-line{font-family:var(--kr-d);font-size:26px;line-height:1.7;letter-spacing:0;color:var(--ink);margin-top:28px;font-weight:400}
+.impact-line strong{font-weight:600;color:var(--ink)}
+.frag .keys{font-size:13px;margin-top:18px;letter-spacing:0;color:var(--gold)}
+.frag .dia{display:none}
+.frag .more{margin-top:24px;border-top:1px solid rgba(137,101,28,.3);padding-top:6px}
+.frag .more summary{font-size:13px;letter-spacing:0;opacity:1;justify-content:space-between}
+.frag .more .bookQuote{font-family:var(--serif);font-size:21px;line-height:1.5;margin:16px 0}
+.frag .more p,.frag .more .found{font-size:16px;line-height:1.95}
+.frag .more .traceGrid p{font-size:13px}
+.frag+.frag{padding-top:72px}
+.frag{padding-bottom:56px}
+.closing{font-size:18px;line-height:1.9}
+.mobile-myth{display:none}
+
+.threadcopy h2{font-size:42px;line-height:1.5;letter-spacing:0;white-space:normal}
+.threadcopy .lead{font-size:18px;line-height:1.9}
+.threadcopy .verdict{font-size:56px;line-height:1.15;letter-spacing:0;overflow-wrap:anywhere}
+.threadcopy .vsub{display:none}
+#s4 .lead{font-size:16px;line-height:1.9}
+.side .who{font-size:52px;line-height:1.1;letter-spacing:0}
+.side .chapter-depth{margin-top:28px}
+
+/* Each chapter opens as a short visual passage. The full reading remains available. */
+#s5 .lead{font-size:16px;line-height:1.9}
+#s5 .chap,#s5 .chap.last{max-width:min(68%,760px);margin-top:80px;padding:32px 0 0;border-top:1px solid rgba(137,101,28,.3)}
+#s5 .chap .no{font:400 15px/1.5 var(--util);letter-spacing:0;color:var(--gold);margin:0;opacity:1}
+#s5 .chap h3{font:500 70px/1.05 var(--serif);letter-spacing:0;margin-top:16px;max-width:none;background:none;color:var(--ink);-webkit-text-fill-color:var(--ink)}
+#s5 .chap .kr{font-size:14px;line-height:1.7;letter-spacing:0;margin-top:16px;color:var(--faint)}
+#s5 .chap .kr::after{display:none}
+#s5 .chap .pull{font:400 27px/1.7 var(--kr-d);letter-spacing:0;margin-top:36px;max-width:23em;color:var(--ink)}
+#s5 .chap .pull strong{font-weight:600;font-size:36px;line-height:1.6}
+#s5 .chap .pull::before{display:none}
+#s5 .chap .chapter-intro{font-size:16px;line-height:1.95;letter-spacing:0;color:#493d2d;max-width:31em;margin-top:24px}
+#s5 .chap .idx{font:400 12px/1.7 var(--util);letter-spacing:0;color:var(--gold);opacity:1;margin-top:22px;padding:0;border:0;max-width:none}
+#s5 .chapSym,#s5 .chapArc{display:none}
+.chapter-depth{margin-top:28px;max-width:38em}
+.chapter-depth summary{display:flex;align-items:center;gap:16px;min-height:48px;padding:12px 0;cursor:pointer;list-style:none;border-bottom:1px solid rgba(137,101,28,.3);font:400 14px/1.7 var(--kr);letter-spacing:0;color:var(--gold)}
+.chapter-depth summary::-webkit-details-marker{display:none}
+.chapter-depth summary::after{content:'+';margin-left:auto;font:400 23px/1 var(--serif)}
+.chapter-depth[open] summary::after{content:'\2212'}
+.depth-number{font:400 12px/1.5 var(--util);opacity:.65}
+.chapter-depth summary:hover{color:var(--ink)}
+.chapter-prose{padding:8px 0 16px}
+#s5 .chap .chapter-prose p,.side .chapter-prose p{font:400 16px/2 var(--kr);letter-spacing:0;margin-top:24px;color:var(--body);max-width:38em}
+.side .chapter-prose p.note{font-size:12px}
+#s5 .still{padding-top:88px;padding-bottom:88px;margin-top:72px;margin-bottom:72px}
+.chapter-depth:focus-within{scroll-margin-bottom:30px}
+
+@media(min-width:1161px){
+  .fragcopy{padding-top:19vh}
+  .fraglist{margin-top:64px}
+  .figureStage{height:84vh}
+}
+@media(max-width:1160px){
+  .fragcopy h2{font-size:40px;width:auto}
+  .frag h3{font-size:56px}
+  .mobile-myth{display:block;width:100%;height:300px;object-fit:contain;object-position:center;filter:saturate(.7);margin:0 auto 28px}
+  .threadcopy .verdict{font-size:48px;word-break:normal}
+  #s5 .chap,#s5 .chap.last{max-width:760px}
+  #s5 .chap h3{font-size:60px}
+}
+@media(max-width:760px){
+  .fragcopy h2{font-size:32px;line-height:1.45}
+  .fragcopy .lead{font-size:16px}
+  .frag h3{font-size:44px}
+  .frag blockquote{font-size:16px}
+  .frag .impact-line,.side .impact-line{font-size:23px;line-height:1.7}
+  .frag+.frag{padding-top:44px}
+  .frag{padding-bottom:36px}
+  .mobile-myth{height:260px;margin-bottom:24px}
+  .threadcopy h2{font-size:30px}
+  .threadcopy .lead{font-size:16px}
+  .threadcopy .verdict{font-size:29px;letter-spacing:0;word-break:normal}
+  .side .who{font-size:42px}
+  #s5 .chap,#s5 .chap.last{max-width:none;margin-top:56px;padding-top:26px}
+  #s5 .chap h3{font-size:43px;line-height:1.12;overflow-wrap:normal;word-break:normal}
+  #s5 .chap .kr{font-size:13px}
+  #s5 .chap .pull{font-size:20px;line-height:1.75;margin-top:28px}
+  #s5 .chap .pull strong{font-size:27px;line-height:1.65}
+  #s5 .chap .chapter-intro{font-size:16px;line-height:1.9}
+  #s5 .chap .chapter-prose p{font-size:16px;line-height:1.95}
+  #s5 .chap .idx{font-size:12px}
+}
+/* Portrait-led spreads; the sea and voyage remain unchanged. */
+.figureStage,.relief-haze,.air{display:none}
+.fragcopy{width:auto;margin:0 10% 0 7%;padding:64px 0 48px;top:auto}
+.fragcopy h2{font-size:38px;max-width:none;width:auto;line-height:1.4}
+.fragcopy .lead{max-width:38em}
+.fraglist{margin-top:40px}
+.frag{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:0 32px;max-width:none;padding:28px 0 40px;align-items:center}
+.frag+.frag{padding-top:40px}
+.frag>h3{grid-area:1/1/2/3;font-size:96px;line-height:1;letter-spacing:0;margin:0 0 18px;font-weight:500;border-bottom:1px solid rgba(94,80,53,.3);padding-bottom:18px}
+.frag-text{grid-area:2/1;align-self:center;min-width:0}
+.frag-text .no{font-size:12px;margin:0}
+.frag-text .role{font-size:12px;margin-top:14px;letter-spacing:0}
+.frag-text .impact-line{font-size:32px;line-height:1.65;margin-top:22px;word-break:keep-all}
+.frag-text .keys{font-size:13px;margin-top:24px;letter-spacing:0}
+.portrait-frame{grid-area:2/2;height:430px;min-width:0;overflow:hidden;position:relative;mask-image:linear-gradient(#000 94%,transparent);-webkit-mask-image:linear-gradient(#000 94%,transparent)}
+.myth-portrait{display:block;width:100%;height:100%;object-fit:cover;object-position:center 12%;transform:scale(1.45);transform-origin:50% 12%;filter:contrast(1.08);margin:0;max-width:none}
+.frag>blockquote{grid-area:3/1/4/3;font-size:17px;line-height:1.85;margin:22px 0 0;max-width:none}
+.frag>.more{grid-area:4/1/5/3;margin-top:24px}
+.frag .more[open]{max-width:760px;width:100%}
+@media(max-width:1160px){
+  #s1 .hero{position:relative;inset:auto;height:520px;flex:none;width:100%}
+  #s1 .angel{top:100px;bottom:auto;height:420px;mask-image:none;-webkit-mask-image:none}
+  #s1 .heroText{background:none;padding:24px var(--gutter)}
+  #s1 .summary{background:none;padding-top:24px}
+  #s1 .summary::after{display:none}
+  .frags{background:none}
+  .fragcopy{margin:0;padding:20px 0}
+  .frag>h3{font-size:76px}
+  .portrait-frame{height:400px}
+}
+@media(max-width:600px){
+  #s1 .hero{height:420px}
+  #s1 .angel{top:94px;height:326px}
+  #s1 .heroText .eyebrow{margin-bottom:24px}
+  .fragcopy h2{font-size:28px}
+  .fragcopy .lead{font-size:15px;line-height:1.9;margin-top:18px}
+  .fraglist{margin-top:30px}
+  .frag{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:0 8px;padding:18px 0 30px}
+  .frag+.frag{padding-top:30px}
+  .frag>h3{font-size:50px;margin-bottom:8px;padding-bottom:14px}
+  .frag-text .no,.frag-text .role{font-size:10px}
+  .frag-text .role{margin-top:10px}
+  .frag-text .impact-line{font-size:19px;line-height:1.75;margin-top:18px}
+  .frag-text .keys{font-size:11px;line-height:1.8;margin-top:18px}
+  .portrait-frame{height:292px}
+  .myth-portrait{transform:scale(2);transform-origin:50% 0;object-position:center top}
+  .frag>blockquote{font-size:15px;line-height:1.9;margin-top:16px}
+  .frag>.more{margin-top:18px}
+}
+@media(max-width:380px){
+  .frag>h3{font-size:42px}
+  .frag-text .impact-line{font-size:17px}
+  .portrait-frame{height:270px}
+}
+@media print{
+  .portrait-frame{display:none}
+  .mobile-myth{display:none}
+  #s5 .chap,#s5 .chap.last{max-width:none;break-before:page;margin:0;padding:20px 0}
+  #s5 .chap h3{font-size:36px}
+  #s5 .chap .pull,#s5 .chap .pull strong{font-size:23px}
+  .chapter-prose{display:block}
+}

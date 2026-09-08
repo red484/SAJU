@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE UNWRITTEN MYTH — 온보딩 전환 목업 v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Nanum+Myeongjo:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#04030a; --gold:#c9a227; --gold-lit:#e8c87a; --gold-pale:#f3e4bd; --ivory:#f0ead9;
+  --serif:'Cormorant Garamond','Apple Garamond','Times New Roman',serif;
+  /* 타입 스케일 — 모든 화면이 이 네 단계만 쓴다 */
+  --t-display:clamp(1.85rem,4.3vw,3.3rem);
+  --t-eyebrow:clamp(.64rem,.96vw,.82rem);
+  --t-lead:clamp(.96rem,1.72vw,1.34rem);
+  --t-opt:clamp(.86rem,1.02vw,.97rem);
+  --tr-display:.12em; --tr-eyebrow:.3em; --tr-lead:.03em; --tr-opt:.08em;
+  --kr:'Nanum Myeongjo','AppleMyungjo','Apple SD Gothic Neo',serif;
+  --util:ui-monospace,'SF Mono',Menlo,monospace;
+  --a-bg:none; --b-bg:none; --c-bg:none; --d-m1:none; --d-m2:none; --q-bg1:none; --q-bg2:none; --fx-dust:none; --fx-shaft:none; --fx-const:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--ivory);font-family:var(--kr);overflow:hidden;-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0;overflow:hidden;cursor:pointer;background:var(--ink)}
+
+/* B가 아래, A가 위 — A가 흩어지거나 떨어지면 그 자리에서 B가 드러남 */
+.scene{position:absolute;inset:0;will-change:transform,opacity,filter;transform-origin:50% 45%;
+  pointer-events:none}          /* 배경판이 버튼 위를 덮어 클릭을 먹던 문제 */
+#qBg1,#qBg2{pointer-events:none}
+.plate{position:absolute;inset:-2%;background-size:cover;background-position:center 46%;background-repeat:no-repeat}
+#b-bg{background-image:var(--b-bg);background-position:center 58%}
+/* A는 21:9라 화면(2:1)에 cover하면 좌우가 잘리며 확대됨 → contain으로 원본 거리 유지 */
+#a-bg{background-image:var(--a-bg);background-size:contain;background-position:center;background-color:var(--ink)}
+
+#curtain{position:absolute;inset:0;background:var(--ink);opacity:0;pointer-events:none}
+.fx{position:absolute;inset:-10%;background-size:cover;background-position:center;background-repeat:no-repeat;
+    mix-blend-mode:screen;pointer-events:none;will-change:transform,opacity;opacity:0}
+video.fx{width:100%;height:100%;object-fit:cover}
+#fxShaft{background-image:var(--fx-shaft);background-position:center top;background-size:auto 102%}
+#fxConst{background-image:var(--fx-const)}
+
+#sceneC{opacity:0}
+#c-bg{inset:0;background-image:var(--c-bg);background-size:cover;background-position:center}
+#sceneC video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+#sceneC{transform-origin:50% 45%}
+#colC{position:absolute;left:6.5vw;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;max-width:min(42vw,540px);
+  pointer-events:none;opacity:0}
+#colC .eyebrow{display:flex;align-items:center;gap:.7rem;margin-bottom:1.6rem;color:var(--gold);opacity:.8}
+#colC .eyebrow span{flex:1;height:1px;background:linear-gradient(to right,var(--gold),transparent);max-width:120px}
+
+
+
+#cFields{display:flex;gap:clamp(1.4rem,3.4vw,3.2rem);margin-top:3.4rem;pointer-events:auto}
+#cFields .fld{flex:0 0 auto;width:clamp(76px,9vw,120px)}
+#cFields label{display:block;font-family:var(--serif);font-size:.7rem;letter-spacing:.3em;
+  color:var(--gold);opacity:.85;margin-bottom:.5rem}
+#cFields .mk{color:var(--gold);font-size:.55rem;opacity:.55;height:.9rem}
+/* 드롭다운 — 기본 UI를 지우고 금선 밑줄만 남긴다. 오른쪽 ▾는 배경 그라디언트로 그린다 */
+#cFields select, #dField select{
+  width:100%;background:transparent;border:0;border-bottom:1px solid rgba(201,162,39,.42);
+  color:#f6ecd8;font-family:var(--serif);font-size:1.08rem;letter-spacing:.1em;
+  padding:.15rem 1.1rem .45rem 0;cursor:pointer;border-radius:0;
+  text-align:center;text-align-last:center;
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;
+  background-image:
+    linear-gradient(45deg,transparent 50%,rgba(201,162,39,.75) 50%),
+    linear-gradient(135deg,rgba(201,162,39,.75) 50%,transparent 50%);
+  background-size:5px 5px,5px 5px;
+  background-position:right 2px top 58%,right calc(2px + 5px) top 58%;
+  background-repeat:no-repeat}
+#cFields select:focus, #dField select:focus{outline:none;border-bottom-color:var(--gold-lit)}
+#cFields select:invalid, #dField select:invalid{color:rgba(201,162,39,.45)}
+/* 펼친 목록은 OS가 그리므로 배경을 직접 지정해야 어둡게 나온다 */
+#cFields option, #dField option{background:#0b0910;color:#f6ecd8}
+#cGo{display:inline-flex;align-items:center;gap:1.1rem;margin-top:3.6rem;
+  font-family:var(--serif);font-size:.76rem;letter-spacing:.3em;color:var(--gold-lit);
+  background:none;border:0;cursor:pointer;pointer-events:auto;padding:0}
+#cGo i{display:block;width:clamp(60px,7vw,104px);height:1px;background:var(--gold);opacity:.7}
+/* 확인 버튼 — 선택 전에는 없고, 고르면 스며든다 */
+#dGo{pointer-events:auto}
+#dGo, .goBtn{display:inline-flex;align-items:center;gap:1.1rem;margin-top:3.2rem;
+  font-family:var(--serif);color:var(--gold-lit);background:none;border:0;cursor:pointer;padding:.4rem 0;
+  transition:color .35s,gap .35s,opacity .45s ease,transform .45s ease}
+#dGo i, .goBtn i{display:block;width:clamp(60px,7vw,104px);height:1px;background:var(--gold);
+  opacity:.7;transition:width .35s}
+#dGo:hover, .goBtn:hover{color:#fdf6e6;gap:1.5rem}
+#dGo:hover i, .goBtn:hover i{width:clamp(80px,9vw,124px)}
+.goBtn{opacity:0;transform:translateY(8px);pointer-events:none}
+.goBtn.ready{opacity:1;transform:none;pointer-events:auto}
+#colG .goBtn{margin-top:2rem}
+
+#sceneD{opacity:0}
+#sceneD .shot{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
+  will-change:transform,opacity,filter}
+#d-m1{background-image:var(--d-m1)}
+#d-m2{background-image:var(--d-m2)}
+video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:center 42%}
+#dFlash{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 62% 48%,
+  rgba(255,238,196,.5),rgba(255,226,160,.12) 45%,transparent 72%);
+  mix-blend-mode:screen;opacity:0;pointer-events:none}
+#colD{position:absolute;left:6.5vw;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;max-width:min(38vw,470px);
+  pointer-events:none;opacity:0}
+
+.hr{width:clamp(100px,13vw,180px);height:1px;background:linear-gradient(to right,var(--gold),transparent);margin:0 0 1.3rem}
+
+
+
+#dField{display:flex;gap:clamp(1.4rem,3.4vw,3.2rem);margin-top:3rem;pointer-events:auto}
+#dField .fld{flex:0 0 auto;width:clamp(88px,10vw,132px)}
+#dField label{display:block;font-family:var(--serif);font-size:.7rem;letter-spacing:.3em;
+  color:var(--gold);opacity:.85;margin-bottom:.5rem}
+#dField .mk{color:var(--gold);font-size:.55rem;opacity:.55;height:.9rem}
+
+#sceneE{opacity:0}
+#e-bg{inset:0;background:var(--ink)}
+#sceneE video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+#colE{position:absolute;right:5vw;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;width:min(34vw,430px);
+  pointer-events:none;opacity:0}
+
+
+
+
+
+#eOpts{margin-top:2.6rem;pointer-events:auto}
+.opt{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  padding:.85rem 0 .7rem;border-bottom:1px solid rgba(201,162,39,.28);
+  font-family:var(--kr);font-size:clamp(.86rem,1.1vw,1rem);letter-spacing:.07em;color:#cfc2a6;
+  position:relative;transition:color .35s,border-color .35s,padding-left .35s}
+.opt::after{content:'\2727';position:absolute;right:2px;top:50%;transform:translateY(-50%);
+  color:var(--gold);opacity:.35;font-size:.7rem;transition:opacity .35s,transform .35s}
+.opt:hover,.opt.sel{color:#fbf3e2;border-color:rgba(232,200,122,.85);padding-left:.7rem}
+.opt:hover::after,.opt.sel::after{opacity:1;transform:translateY(-50%) scale(1.35)}
+
+#sceneF{opacity:0}
+#sceneF video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+#colQ1,#colQ2{position:absolute;left:6.5vw;top:0;bottom:0;
+  display:flex;flex-direction:column;justify-content:center;width:min(36vw,470px);
+  pointer-events:none;opacity:0}
+.qrule{display:flex;align-items:center;gap:.6rem;margin:1.8rem 0 2.2rem;color:var(--gold);opacity:.7}
+.qrule span{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.qopt{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  padding:1rem 0 .85rem;border-bottom:1px solid rgba(201,162,39,.24);
+  font-family:var(--kr);font-size:var(--t-opt);letter-spacing:var(--tr-opt);color:#cfc2a6;
+  position:relative;transition:color .35s,border-color .35s,padding-left .35s}
+.qopt::after{content:'\2727';position:absolute;right:2px;top:50%;transform:translateY(-50%);
+  color:var(--gold);opacity:.35;font-size:.7rem;transition:opacity .35s,transform .35s}
+.qopt:hover,.qopt.sel{color:#fbf3e2;border-color:rgba(232,200,122,.85);padding-left:.7rem}
+.qopt:hover::after,.qopt.sel::after{opacity:1;transform:translateY(-50%) scale(1.35)}
+#colF{position:absolute;right:5vw;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;width:min(36vw,470px);
+  pointer-events:none;opacity:0}
+
+#fRule{display:flex;align-items:center;gap:.6rem;margin:2rem 0 2.4rem;color:var(--gold);opacity:.75}
+#fRule span{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.fopt{display:block;width:100%;text-align:left;background:none;border:0;
+  cursor:pointer;padding:1rem 0 .85rem;border-bottom:1px solid rgba(201,162,39,.24);
+  font-family:var(--kr);font-size:clamp(.88rem,1.15vw,1.02rem);letter-spacing:.09em;color:#cfc2a6;
+  position:relative;transition:color .35s,border-color .35s,padding-left .35s}
+.fopt::after{content:'\2727';position:absolute;right:2px;top:50%;transform:translateY(-50%);
+  color:var(--gold);opacity:.35;font-size:.7rem;transition:opacity .35s,transform .35s}
+.fopt:hover,.fopt.sel{color:#fbf3e2;border-color:rgba(232,200,122,.8);padding-left:.7rem}
+.fopt:hover::after,.fopt.sel::after{opacity:1;transform:translateY(-50%) scale(1.35)}
+
+
+#sceneG{opacity:0}
+#sceneG video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+#colG{position:absolute;left:0;right:0;bottom:7%;text-align:center;pointer-events:none;opacity:0;padding:0 5vw}
+
+#gRule{display:flex;align-items:center;justify-content:center;gap:.7rem;margin:1.6rem auto 2.2rem;
+  max-width:min(46vw,520px);color:var(--gold);opacity:.7}
+#gRule span{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+#gOpts{display:flex;justify-content:center;align-items:stretch;gap:0}
+.gopt{flex:1;max-width:220px;background:none;border:0;cursor:pointer;padding:1rem 1rem 1.5rem;
+  border-left:1px solid rgba(201,162,39,.22);color:#cfc2a6;position:relative;
+  transition:color .35s,transform .35s}
+.gopt:first-child{border-left:0}
+.gopt::after{content:'\2727';position:absolute;left:50%;bottom:.35rem;transform:translateX(-50%);
+  color:var(--gold);opacity:0;font-size:.7rem;transition:opacity .35s,transform .35s}
+.gopt:hover,.gopt.sel{color:#fbf3e2;transform:translateY(-4px)}
+.gopt:hover::after,.gopt.sel::after{opacity:1;transform:translateX(-50%) scale(1.3)}
+
+
+#sceneH{opacity:0}
+#sceneH video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+/* ORACLE이 앉는 자리는 대리석이 밝아(평균 63) 뒤에 얇은 어둠을 깐다 */
+#colH{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;text-align:center;
+  pointer-events:none;opacity:0;padding:0 6vw}
+#colH::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(72vw,900px);height:150%;pointer-events:none;
+  background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(4,3,10,.72),rgba(4,3,10,.35) 55%,transparent 78%)}
+#colH>*{position:relative}
+
+
+
+#hLoz{color:var(--gold);font-size:.6rem;margin:1.05rem 0;opacity:.7}
+
+#hGo{display:inline-flex;align-items:center;gap:1.2rem;margin-top:2.1rem;pointer-events:auto;
+  font-family:var(--serif);font-size:.8rem;letter-spacing:.32em;text-indent:.32em;color:var(--gold-lit);
+  background:none;border:0;cursor:pointer;padding:.4rem 0;transition:color .35s,gap .35s}
+#hGo i{display:block;width:clamp(50px,6vw,90px);height:1px;background:var(--gold);opacity:.7;transition:width .35s}
+#hGo:hover{color:#fdf6e6;gap:1.6rem}
+#hGo:hover i{width:clamp(70px,8vw,120px)}
+
+
+/* ── 통일 타이포 ── 모든 화면이 같은 네 단계만 쓴다 ───────── */
+#cTitle, #dTitle, #eTitle, #hTitle, #q1Title, #q2Title, #fTitle, #gTitle {
+  font-family:var(--serif); font-weight:300; font-size:var(--t-display); line-height:1.02;
+  letter-spacing:var(--tr-display); text-indent:var(--tr-display); color:#f6ecd8;
+  text-shadow:0 2px 40px rgba(0,0,0,.95), 0 0 90px rgba(0,0,0,.65); }
+#cSub, #dSub, #eSub, #hSub, #q1Sub, #q2Sub, #fSub, #gSub {
+  font-family:var(--serif); font-size:var(--t-eyebrow);
+  letter-spacing:var(--tr-eyebrow); text-indent:var(--tr-eyebrow);
+  color:var(--gold-lit); margin-top:.95rem; opacity:.85; }
+#cLead, #dLead, #eLead, #hLead, .qq, #fQ, #gQ {
+  font-family:var(--kr); font-size:var(--t-lead); line-height:1.68;
+  letter-spacing:var(--tr-lead); color:#e8dcc0; margin-top:1.5rem;
+  text-shadow:0 2px 28px rgba(0,0,0,.95); }
+/* ✧줄이 하던 아래 여백을 질문문이 대신 갖는다 */
+.qq, #fQ, #gQ { margin-bottom:2.2rem; }
+/* G는 가운데 정렬 레이아웃이라 금선도 가운데에서 양쪽으로 흐른다 */
+#colG .hr{ margin:0 auto 1.3rem;
+  background:linear-gradient(to right,transparent,var(--gold),transparent); }
+.opt, .fopt, .gopt { font-family:var(--kr); font-size:var(--t-opt); letter-spacing:var(--tr-opt); }
+/* 컬럼이 pointer-events:none이라 버튼이 그대로 물려받아 클릭이 안 닿았다.
+   DESIRE만 #eOpts에 auto가 있어 유일하게 눌렸다 — 나머지도 같게 연다 */
+.qopt, .fopt, .gopt, #gOpts { pointer-events:auto; }
+/* 화면 밖 컬럼이 클릭을 가로채지 않게. 부모의 none은 auto인 자식을 못 막아서 자손까지 끈다 */
+.colOff, .colOff *{ pointer-events:none !important; }
+/* 답 없이 넘어가려 할 때 — 고를 자리를 두 번 깜빡인다.
+   컬럼 transform은 매 프레임 인라인으로 덮이므로 border/색만 건드린다 */
+@keyframes needPulse{0%,100%{border-bottom-color:rgba(201,162,39,.24)}
+                     50%{border-bottom-color:rgba(232,200,122,.95)}}
+@keyframes needGlow {0%,100%{color:#cfc2a6} 50%{color:#fbf3e2}}
+.nudge .opt,.nudge .fopt,.nudge .qopt,.nudge select{animation:needPulse .5s ease 2}
+.nudge .gopt{animation:needGlow .5s ease 2}
+/* 눌린 순간 — 금선이 왼쪽에서 한 번 지나가고 사라진다 */
+@keyframes optCommit{ 0%{transform:scaleX(0);opacity:1} 100%{transform:scaleX(1);opacity:0} }
+.opt.sel::before,.qopt.sel::before,.fopt.sel::before,.gopt.sel::before{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:var(--gold-lit);transform-origin:left center;
+  animation:optCommit .62s cubic-bezier(.22,.61,.36,1) forwards;pointer-events:none}
+.gopt.sel::before{ bottom:0 }
+#cFields label, #dField label {
+  font-family:var(--serif); font-size:var(--t-eyebrow);
+  letter-spacing:var(--tr-eyebrow); color:var(--gold); opacity:.85; }
+#cFields input, #dField input { font-family:var(--serif); font-size:1.15rem; letter-spacing:.14em; }
+#hGo, #cGo, #dGo, .goBtn { font-family:var(--serif); font-size:var(--t-eyebrow);
+  letter-spacing:var(--tr-eyebrow); text-indent:var(--tr-eyebrow); }
+.hr, #gRule, #fRule { opacity:.7; }
+
+
+
+/* ── 결과창 ── 온보딩과 반대되는 밝은 세계. 글자는 어둡게. ───── */
+#sceneR{opacity:0}
+#sceneR video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+/* 검은 암전이 아니라 화이트 아웃으로 넘어간다 */
+#whiteOut{position:absolute;inset:0;background:#f7f2e7;opacity:0;pointer-events:none}
+#colR{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;padding:0 7vw;
+  pointer-events:none;opacity:0}
+#rNo{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:.42em;text-indent:.42em;
+  color:#8a6b28}
+#rLead{font-family:var(--kr);font-size:var(--t-lead);letter-spacing:.03em;color:#2e2418;
+  margin-top:.9rem;word-break:keep-all}
+#rGap{height:clamp(1.6rem,4.5vh,3rem)}
+#rTitle{font-family:var(--serif);font-weight:300;
+  font-size:calc(var(--t-display) * .84);line-height:1.22;
+  letter-spacing:.09em;text-indent:.09em;color:#1f1810;max-width:16ch;
+  margin-left:auto;margin-right:auto}
+#rSub{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:.3em;text-indent:.3em;
+  color:#6d5726;margin-top:1rem}
+#rCta{margin-top:clamp(1.8rem,5vh,3.4rem);font-family:var(--kr);font-size:var(--t-opt);
+  letter-spacing:.16em;color:#3a2e1e;background:none;border:0;cursor:pointer;pointer-events:auto;
+  padding:.5rem 0;transition:opacity .35s}
+#rCta:hover{opacity:.6}
+/* ── 바다 ── 표지에서 아래로 밀면 정원 아래로 수평선이 차오른다 */
+#seaWrap{position:absolute;inset:0;pointer-events:none;opacity:0}
+#seaWrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#toResult{position:absolute;left:0;right:0;bottom:12%;text-align:center;opacity:0;
+  font-family:var(--serif);font-size:.78rem;letter-spacing:.3em;text-indent:.3em;
+  color:#3a2e1e;text-decoration:none;pointer-events:none;transition:opacity .5s}
+#toResult.on{opacity:1;pointer-events:auto}
+#toResult:hover{color:#0f0c07}
+#seaHint{position:absolute;left:0;right:0;bottom:8%;text-align:center;pointer-events:none;opacity:0;
+  font-family:var(--kr);font-size:var(--t-opt);letter-spacing:.18em;color:#3a2e1e}
+#chap{position:absolute;left:0;right:0;top:30%;transform:translateY(-50%);text-align:center;
+  pointer-events:none;opacity:0;padding:0 8vw}
+#chapNo{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:.42em;text-indent:.42em;color:#8a6b28}
+#chapTitle{font-family:var(--serif);font-weight:300;font-size:calc(var(--t-display)*.9);
+  letter-spacing:.11em;text-indent:.11em;color:#1f1810;margin-top:.9rem}
+#qBg1{position:absolute;inset:0;background:var(--q-bg1) center/cover no-repeat;opacity:0}
+#qBg2{position:absolute;inset:0;background:var(--q-bg2) center/cover no-repeat;opacity:0}
+#qScrim{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:linear-gradient(to right,rgba(4,3,10,.55) 0%,rgba(4,3,10,.4) 30%,
+    rgba(4,3,10,.16) 56%,transparent 76%)}
+@media (max-width:760px),(orientation:portrait){
+  #qScrim{background:linear-gradient(to top,rgba(4,3,10,.9) 0%,rgba(4,3,10,.7) 42%,
+    rgba(4,3,10,.3) 68%,transparent 88%)}
+}
+#skip{position:fixed;right:20px;top:20px;z-index:55;
+  font-family:var(--serif);font-size:.7rem;letter-spacing:.28em;text-indent:.28em;
+  padding:.6rem 1.05rem;cursor:pointer;border:1px solid currentColor;background:transparent;
+  color:rgba(232,200,122,.55);transition:color .3s,border-color .3s,opacity .3s;
+  border-radius:2px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#skip:hover{color:rgba(250,240,214,.95)}
+#skip.light{color:rgba(60,48,30,.5)}
+#skip.light:hover{color:rgba(30,24,14,.9)}
+#skip.gone{opacity:0;pointer-events:none}
+@media (max-width:760px),(orientation:portrait){
+  #skip{right:12px;top:12px;font-size:.62rem;padding:.5rem .8rem}
+}
+#vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 66% 58% at 50% 46%,transparent 0%,rgba(4,3,10,.42) 60%,rgba(4,3,10,.94) 100%)}
+
+.copy{position:absolute;left:0;right:0;text-align:center;pointer-events:none;padding:0 6vw}
+#titleWrap{top:47%}
+#title{font-family:var(--serif);font-weight:300;font-size:clamp(1.6rem,4.2vw,3.4rem);line-height:1.16;
+  letter-spacing:.24em;text-indent:.24em;color:#fdfaf3;
+  text-shadow:0 2px 46px rgba(0,0,0,.9),0 0 90px rgba(0,0,0,.75)}
+#subtitle{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:var(--tr-eyebrow);
+  text-indent:var(--tr-eyebrow);color:var(--gold-lit);margin-top:1.9rem;opacity:.92;
+  text-shadow:0 1px 22px rgba(0,0,0,.9)}
+#cueA{position:absolute;left:0;right:0;bottom:6.5%;text-align:center;pointer-events:none}
+.rule{width:1px;height:34px;margin:0 auto 1.3rem;background:linear-gradient(to bottom,transparent,var(--gold),transparent)}
+.cue{font-family:var(--serif);font-size:var(--t-eyebrow);letter-spacing:var(--tr-eyebrow);
+  text-indent:var(--tr-eyebrow);color:var(--gold);opacity:.85}
+.lozenge{margin-top:1.2rem;color:var(--gold);font-size:.66rem;opacity:.65}
+#copyB{top:19%;opacity:0}
+#lineB{font-family:var(--kr);font-size:var(--t-lead);letter-spacing:var(--tr-lead);
+  color:var(--gold-pale);text-shadow:0 2px 30px rgba(0,0,0,.95)}
+#copyB .rule{margin:1.6rem auto 1.4rem;height:28px}
+#hintB{font-family:var(--kr);font-size:var(--t-opt);letter-spacing:var(--tr-opt);color:#f7ecd2;
+  text-shadow:0 1px 4px rgba(0,0,0,1),0 2px 26px rgba(0,0,0,.95)}
+
+#panel{position:fixed;right:16px;bottom:16px;z-index:50;width:288px;padding:15px 16px 13px;
+  background:rgba(9,8,14,.94);border:1px solid rgba(201,162,39,.28);backdrop-filter:blur(14px);
+  font-family:var(--util);font-size:11px;color:#cfc6b4;transition:opacity .2s,transform .2s}
+#panel.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+#panel h2{font-size:9.5px;letter-spacing:.19em;color:var(--gold);font-weight:400;margin-bottom:10px;text-transform:uppercase}
+#phaseNow{color:var(--gold-lit);float:right;font-size:9.5px}
+#modes{display:flex;gap:5px;margin-bottom:11px}
+#modes button{flex:1;padding:7px 0;cursor:pointer;background:transparent;color:#8d8474;
+  border:1px solid rgba(201,162,39,.2);font-family:var(--util);font-size:10px}
+#modes button.on{background:rgba(201,162,39,.16);color:var(--gold-lit);border-color:rgba(201,162,39,.5)}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.row label{flex:1;color:#9d9484;font-size:10.5px}
+.row input{width:56px;background:#12100c;color:var(--gold-lit);border:1px solid rgba(201,162,39,.22);
+  padding:3px 5px;font-family:var(--util);font-size:11px;text-align:right}
+.bar{width:50px;height:2px;background:rgba(201,162,39,.16)}
+.bar i{display:block;height:100%;background:var(--gold)}
+#scrub{width:100%;margin:11px 0 9px;accent-color:var(--gold)}
+.btns{display:flex;gap:6px}
+.btns button{flex:1;padding:6px 0;cursor:pointer;background:transparent;color:var(--gold-lit);
+  border:1px solid rgba(201,162,39,.3);font-family:var(--util);font-size:10px;letter-spacing:.08em}
+.btns button:hover{background:rgba(201,162,39,.12)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:rgba(9,8,14,.95);
+  border:1px solid rgba(201,162,39,.3);color:var(--gold-lit);font-family:var(--util);font-size:11px;
+  padding:8px 15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+#help{position:fixed;left:16px;bottom:15px;z-index:50;font-family:var(--util);font-size:10px;
+  color:rgba(207,198,180,.32);letter-spacing:.05em}
+:focus-visible{outline:1px solid var(--gold-lit);outline-offset:3px}
+
+/* ── 세로 화면 ── 좌우 컬럼을 버리고 전체 폭 하단 정렬로 전환 ───── */
+@media (max-width:760px), (orientation:portrait){
+  :root{
+    --t-display:clamp(1.55rem,7.2vw,2.45rem);
+    --t-eyebrow:clamp(.6rem,2.6vw,.74rem);
+    --t-lead:clamp(.92rem,4vw,1.15rem);
+    --t-opt:clamp(.88rem,3.7vw,1rem);
+    --tr-display:.09em; --tr-eyebrow:.22em;
+  }
+  #colC,#colD,#colE,#colF,#colH,#colQ1,#colQ2{
+    left:0; right:0; top:auto; bottom:0; width:auto; max-width:none;
+    display:block; text-align:left; padding:0 7vw 11vh;
+    background:linear-gradient(to top,
+      rgba(4,3,10,.88) 0%, rgba(4,3,10,.72) 42%, rgba(4,3,10,.34) 74%, transparent 100%); }
+  #colH{ text-align:center; padding-bottom:9vh; }
+  #colH::before{ display:none; }
+  #colG{ bottom:0; padding:0 6vw 8vh;
+    background:linear-gradient(to top,
+      rgba(4,3,10,.88) 0%, rgba(4,3,10,.72) 46%, rgba(4,3,10,.34) 76%, transparent 100%); }
+  /* 한국어는 어절 단위로만 끊는다 — "위/해" 같은 분리를 막는다 */
+  #cLead,#dLead,#eLead,#hLead,.qq,#fQ,#gQ,#lineB,#hintB,.opt,.fopt,.gopt{
+    word-break:keep-all; overflow-wrap:break-word; }
+  #cLead, #dLead, #eLead, #hLead, .qq, #fQ, #gQ{ margin-top:1.2rem; line-height:1.65; margin-bottom:1.7rem; }
+  #cSub,#dSub,#eSub,#hSub,#q1Sub,#q2Sub,#fSub,#gSub{ margin-top:.7rem; }
+  /* 선택지는 손가락이 닿을 크기로 */
+  .opt,.fopt,.qopt{ padding:1.05rem 0 .95rem; }
+  #eOpts,#colF{ margin-top:1.4rem; }
+  #gOpts{ flex-wrap:wrap; }
+  .gopt{ flex:0 0 50%; max-width:none; border-left:0;
+    border-top:1px solid rgba(201,162,39,.2); padding:1rem .5rem; text-align:center; }
+  .gopt:nth-child(odd){ border-right:1px solid rgba(201,162,39,.2); }
+  #cFields,#dField{ gap:1rem; margin-top:2rem; }
+  #cFields .fld,#dField .fld{ width:auto; flex:1; }
+  #cGo,#hGo,#dGo,.goBtn{ margin-top:1.8rem; }
+  #cGo i,#hGo i,#dGo i,.goBtn i{ width:44px; }
+  #colG .goBtn{ margin-top:1.2rem; }
+  /* 상단 카피도 하단으로 */
+  #copyB{ top:auto; bottom:0; padding:0 8vw 10vh; text-align:center;
+    background:linear-gradient(to top,
+      rgba(4,3,10,.86) 0%, rgba(4,3,10,.66) 48%, rgba(4,3,10,.26) 78%, transparent 100%); }
+  #titleWrap{ top:38%; }
+  #cueA{ bottom:9%; }
+  #panel{ display:none; }
+  #colR{ padding:0 8vw; justify-content:flex-end; padding-bottom:14vh; }
+  #r-v1{ object-position:55% center; }
+  #r-v3{ object-position:46% center; }
+  #seaVid{ object-position:center 62%; }
+
+  /* 21:9 원본은 세로에서 contain하면 위아래가 새까맣게 비어버린다 */
+  #a-bg{ background-size:cover; }
+  /* B는 16:9 → 세로 화면에 cover하면 가로 26%만 남아 책이 양옆으로 잘린다.
+     폭 기준으로 앉혀 책 전체(가로 22~82%)가 들어오게 하고, 위아래는 잉크로 흘린다 */
+  #sceneB{ background:var(--ink); }
+  /* 띠 크기 계산: .plate가 104vw → 배경 폭 1.68*104=174.7vw, 원본비 1.776 → 높이 98.4vw.
+     마스크를 같은 크기·같은 위치로 깔아야 위아래 이음선이 안 생긴다 */
+  #b-bg{ background-color:var(--ink);
+         background-size:168% auto; background-position:center 39%;
+         -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 79%,transparent 99%);
+         -webkit-mask-size:168% 98.4vw; -webkit-mask-position:center 39%; -webkit-mask-repeat:no-repeat;
+         mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 79%,transparent 99%);
+         mask-size:168% 98.4vw; mask-position:center 39%; mask-repeat:no-repeat; }
+  /* 클립마다 피사체 가로 위치가 달라 일괄 center로는 인물이 잘린다 (실측값) */
+  #c-v1{ object-position:53% center; }
+  #c-v2{ object-position:72% center; }
+  #c-bg{ background-position:72% center; }
+  #d-wide{ object-position:67% center; }
+  #d-m1{ background-position:57% center; }
+  #d-m2{ background-position:70% center; }
+  #e-v1{ object-position:42% center; }
+  #e-v2{ object-position:44% center; }
+  #e-v3{ object-position:31% center; }
+  #f-v1,#f-v2{ object-position:28% center; }
+  #g-v1,#g-v2,#g-v3,#h-v1,#h-v2{ object-position:50% center; }
+  /* 세로에선 사이 여백이 과하게 벌어진다 */
+  #copyB .rule{ height:20px; margin:1rem auto .9rem; }
+  #cueA .rule{ height:24px; margin-bottom:.9rem; }
+}
+@media (max-width:640px){#help{display:none}}
+</style>
+</head>
+<body>
+
+<svg id="inkDefs" width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs></defs></svg>
+
+<div id="stage" role="button" tabindex="0" aria-label="전환 재생">
+  <div class="scene" id="sceneB"><div class="plate" id="b-bg"></div></div>
+  <div class="scene" id="sceneA">
+    <div class="plate" id="a-bg"></div>
+    <div id="a-subject"></div>
+  </div>
+
+  <div class="scene" id="sceneC">
+    <div class="plate" id="c-bg"></div>
+    <video id="c-v1" muted playsinline preload="none">
+      <source src="assets/bdb05826d34d03.mp4" type="video/mp4"><source src="assets/bdb05826d34d03.mp4" type="video/mp4"></video>
+    <video id="c-v2" data-fwd="2.90" muted playsinline preload="none">
+      <source src="assets/553cc9d7f83633.mp4" type="video/mp4"><source src="assets/553cc9d7f83633.mp4" type="video/mp4"></video>
+  </div>
+
+  <div class="scene" id="sceneD">
+    <div class="shot" id="d-m1"></div>
+    <div class="shot" id="d-m2"></div>
+    <video class="shot" id="d-wide" data-fwd="5.0417" muted playsinline preload="none">
+      <source src="assets/6de72af83e11a4.mp4" type="video/mp4"><source src="assets/6de72af83e11a4.mp4" type="video/mp4"></video>
+    <div id="dFlash"></div>
+  </div>
+
+  <div class="scene" id="sceneE">
+    <div class="plate" id="e-bg"></div>
+    <video id="e-v1" muted playsinline preload="none">
+      <source src="assets/80bae372cee494.mp4" type="video/mp4"><source src="assets/80bae372cee494.mp4" type="video/mp4"></video>
+    <video id="e-v2" muted playsinline preload="none">
+      <source src="assets/bba57e49f31011.mp4" type="video/mp4"><source src="assets/bba57e49f31011.mp4" type="video/mp4"></video>
+    <video id="e-v3" data-fwd="1.6458" muted playsinline loop preload="none">
+      <source src="assets/7cec9693ca8738.mp4" type="video/mp4"><source src="assets/7cec9693ca8738.mp4" type="video/mp4"></video>
+  </div>
+
+  <div class="scene" id="sceneF">
+    <video id="f-v1" muted playsinline preload="none">
+      <source src="assets/d8543d459d53b3.mp4" type="video/mp4"><source src="assets/d8543d459d53b3.mp4" type="video/mp4"></video>
+    <video id="f-v2" muted playsinline loop preload="none">
+      <source src="assets/ab48d7a0f154c7.mp4" type="video/mp4"><source src="assets/ab48d7a0f154c7.mp4" type="video/mp4"></video>
+  </div>
+
+  <div class="scene" id="sceneG">
+    <video id="g-v1" muted playsinline preload="none">
+      <source src="assets/aa38b480ee1d06.mp4" type="video/mp4"><source src="assets/aa38b480ee1d06.mp4" type="video/mp4"></video>
+    <video id="g-v2" muted playsinline preload="none">
+      <source src="assets/d787090fce8e2e.mp4" type="video/mp4"><source src="assets/d787090fce8e2e.mp4" type="video/mp4"></video>
+    <video id="g-v3" muted playsinline loop preload="none">
+      <source src="assets/70ad660ed7ebfb.mp4" type="video/mp4"><source src="assets/70ad660ed7ebfb.mp4" type="video/mp4"></video>
+  </div>
+
+  <div class="scene" id="sceneH">
+    <video id="h-v1" muted playsinline preload="none"></video><!-- h-clip1 제거 -->
+    <video id="h-v2" muted playsinline loop preload="none">
+      <source src="assets/f01821cee15f98.mp4" type="video/mp4"><source src="assets/f01821cee15f98.mp4" type="video/mp4"></video>
+  </div>
+
+  <div class="scene" id="sceneR">
+    <video id="r-v1" muted playsinline preload="none">
+      <source src="assets/2c3bd3b90100c0.mp4" type="video/mp4"><source src="assets/2c3bd3b90100c0.mp4" type="video/mp4"></video>
+    <video id="r-v3" muted playsinline loop preload="none">
+      <source src="assets/fb6f59c7e729aa.mp4" type="video/mp4"><source src="assets/fb6f59c7e729aa.mp4" type="video/mp4"></video>
+  </div>
+  <div id="seaWrap">
+    <video id="seaVid" muted playsinline loop preload="none">
+      <source src="assets/dbacaede262010.mp4" type="video/mp4"><source src="assets/dbacaede262010.mp4" type="video/mp4"></video>
+    <div id="chap"><p id="chapNo">I</p><h2 id="chapTitle">THE MYTH</h2></div>
+    <p id="seaHint">아래로</p>
+  <a id="toResult" href="./result.html">기록을 펼칩니다 &#8594;</a>
+  </div>
+  <div id="whiteOut"></div>
+
+  <div class="scene" id="qBg1"></div>
+  <div class="scene" id="qBg2"></div>
+  <div id="qScrim"></div>
+  <div id="curtain"></div>
+  <div class="fx" id="fxConst"></div>
+  <div class="fx" id="fxShaft"></div>
+  <video class="fx" id="fxDust" autoplay muted loop playsinline preload="auto">
+    <source src="assets/02f939af3d5973.mp4" type="video/mp4"><source src="assets/02f939af3d5973.mp4" type="video/mp4"></video>
+  <video class="fx" id="fxBurst" autoplay muted loop playsinline preload="auto">
+    <source src="assets/3392d94998a04f.mp4" type="video/mp4"><source src="assets/3392d94998a04f.mp4" type="video/mp4"></video>
+
+  <div id="vignette"></div>
+
+  <div class="copy" id="titleWrap">
+    <h1 id="title">THE<br>UNWRITTEN<br>MYTH</h1>
+    <p id="subtitle">The Constellations Archive of Delphi</p>
+  </div>
+  <div id="cueA">
+    <div class="rule"></div>
+    <p class="cue">SCROLL OR CLICK TO BEGIN</p>
+    <p class="lozenge">&#9671;</p>
+  </div>
+  <div id="colR">
+    <p id="rNo">ARCHIVE RECORD 01472</p>
+    <p id="rLead">잃어버렸던 당신의 기록이 복원되었습니다.</p>
+    <div id="rGap"></div>
+    <h2 id="rTitle">THE ONE WHO DESCENDED</h2>
+    <p id="rSub">TO FIND A WAY HOME</p>
+    <button id="rCta">당신의 신화를 열람합니다 &#8595;</button>
+  </div>
+
+  <div class="copy" id="copyB">
+    <p id="lineB">오래된 기록이 당신의 존재를 감지했습니다.</p>
+    <div class="rule"></div>
+    <p id="hintB">첫 번째 기록으로</p>
+  </div>
+
+  <div id="colC">
+    <p class="eyebrow"><span></span>&#9671;<span></span></p>
+    <h2 id="cTitle">BIRTH</h2>
+    <p id="cSub">THE FIRST INSCRIPTION</p>
+    <p id="cLead">당신의 이야기가 시작된 날을 새겨주세요.</p>
+    <div id="cFields">
+      <div class="fld"><label for="fy">YEAR</label><p class="mk">&#9671;</p>
+        <select id="fy"></select></div>
+      <div class="fld"><label for="fm">MONTH</label><p class="mk">&#9671;</p>
+        <select id="fm"></select></div>
+      <div class="fld"><label for="fd">DAY</label><p class="mk">&#9671;</p>
+        <select id="fd"></select></div>
+    </div>
+    <button id="cGo">BEGIN THE JOURNEY<i></i></button>
+  </div>
+
+  <div id="colD">
+    <div class="hr"></div>
+    <h2 id="dTitle">TIME</h2>
+    <p id="dSub">THE HOUR</p>
+    <p id="dLead">태어난 시간을 기록합니다.</p>
+    <div id="dField">
+      <div class="fld"><label for="fh">HOUR</label><p class="mk">&#9671;</p>
+        <select id="fh"></select></div>
+      <div class="fld"><label for="fmin">MINUTE</label><p class="mk">&#9671;</p>
+        <select id="fmin"></select></div>
+    </div>
+    <button id="dGo">RECORD THE HOUR<i></i></button>
+  </div>
+
+  <div id="colE">
+    <div class="hr"></div>
+    <h2 id="eTitle">DESIRE</h2>
+    <p id="eSub">THE FAR-REACHING</p>
+    <p id="eLead">당신은 무엇을 위해<br>더 멀리 갈 수 있습니까?</p>
+    <div id="eOpts">
+      <button class="opt">이루는 것</button>
+      <button class="opt">남기는 것</button>
+      <button class="opt">자유로워지는 것</button>
+    </div>
+    <button class="goBtn">CONTINUE<i></i></button>
+  </div>
+
+  <div id="colQ1">
+    <div class="hr"></div>
+    <h2 id="q1Title">REST</h2>
+    <p id="q1Sub">THE REKINDLING</p>
+    <p class="qq">당신은 어떻게<br>기운을 되찾습니까?</p>
+    <button class="qopt">혼자 있을 때</button>
+    <button class="qopt">사람들 사이에서</button>
+    <button class="qopt">몸을 움직일 때</button>
+    <button class="goBtn">CONTINUE<i></i></button>
+  </div>
+
+  <div id="colQ2">
+    <div class="hr"></div>
+    <h2 id="q2Title">CHOICE</h2>
+    <p id="q2Sub">THE CROSSING</p>
+    <p class="qq">선택 앞에서<br>당신은</p>
+    <button class="qopt">오래 재본 뒤에 움직입니다</button>
+    <button class="qopt">일단 움직이고 고쳐갑니다</button>
+    <button class="goBtn">CONTINUE<i></i></button>
+  </div>
+
+  <div id="colF">
+    <div class="hr"></div>
+    <h2 id="fTitle">TRIAL</h2>
+    <p id="fSub">THE ORDEAL</p>
+    <p id="fQ">당신에게 시련은<br>어떤 의미입니까?</p>
+    <button class="fopt">성장하는 과정</button>
+    <button class="fopt">견뎌야 하는 것</button>
+    <button class="fopt">피할 수 없는 운명</button>
+    <button class="goBtn">CONTINUE<i></i></button>
+  </div>
+
+  <div id="colG">
+    <div class="hr"></div>
+    <h2 id="gTitle">ABSENCE</h2>
+    <p id="gSub">THE MISSING</p>
+    <p id="gQ">지금 당신에게<br>가장 부족한 것은?</p>
+    <div id="gOpts">
+      <button class="gopt">시간</button>
+      <button class="gopt">확신</button>
+      <button class="gopt">사람</button>
+      <button class="gopt">여유</button>
+    </div>
+    <button class="goBtn">CONTINUE<i></i></button>
+  </div>
+
+  <div id="colH">
+    <h2 id="hTitle">ORACLE</h2>
+    <p id="hSub">THE FINAL WORD</p>
+    <p id="hLoz">&#10022;</p>
+    <p id="hLead">당신의 흔적이<br>모두 발견되었습니다.</p>
+    <button id="hGo">READ THE MYTH<i></i></button>
+  </div>
+</div>
+
+<div id="panel" class="hidden">
+  <h2>Transition <span id="phaseNow">&#8212;</span></h2>
+  <div id="modes"></div>
+  <div id="rows"></div>
+  <input type="range" id="scrub" min="0" max="1000" value="0">
+  <div class="btns">
+    <button id="btnPlay">다시 재생</button>
+    <button id="btnCopy">값 복사</button>
+    <button id="btnHide">숨기기</button>
+  </div>
+</div>
+<button id="skip">SKIP</button>
+<div id="help">클릭 = 다음 / R = 처음부터 / 1 2 3 = A&#8594;B 전환 방식 / D = 패널</div>
+<div id="toast"></div>
+
+<script>
+/* ── 에셋 ── 파일명만. 같은 폴더 → assets/ → images/ 순으로 찾음 ── */
+const ASSETS={
+  '--a-bg':'assets/3d163fdfe4eb35.jpg',
+  '--a-subject':null,
+  '--b-bg':'assets/26d18bbd53d648.jpg',
+  '--c-bg':'assets/02c4310062b540.jpg',
+  '--d-m1':'assets/a9eda1eb83f3a3.jpg',
+  '--d-m2':'assets/33d4afff583e42.jpg',
+  '--q-bg1':'assets/bda7d31ac20619.jpg',
+  '--q-bg2':'assets/8505b1779a8978.jpg',
+  '--fx-shaft':'assets/ccb2245565fd20.jpg',
+  '--fx-const':'assets/6108913ab53a0d.jpg',
+};
+const LOOKUP=[''];
+const missing=[];
+Object.entries(ASSETS).forEach(([v,file])=>{
+  if(!file) return;
+  let i=0;
+  (function next(){
+    if(i>=LOOKUP.length){ missing.push(file); showMissing(); return; }
+    const url=LOOKUP[i++]+file, img=new Image();
+    img.onload=()=>document.documentElement.style.setProperty(v,"url('"+url+"')");
+    img.onerror=next; img.src=url;
+  })();
+});
+function showMissing(){
+  let el=document.getElementById('missing');
+  if(!el){ el=document.createElement('div'); el.id='missing';
+    el.style.cssText='position:fixed;left:16px;top:16px;z-index:70;padding:11px 14px;background:rgba(9,8,14,.95);'
+      +'border:1px solid rgba(201,162,39,.35);font-family:monospace;font-size:11px;line-height:1.6;color:#cfc6b4';
+    document.body.appendChild(el); }
+  el.innerHTML='<span style="color:#e8c87a">이미지를 못 찾음</span><br>'+missing.join('<br>')
+    +'<br><span style="opacity:.6">html과 같은 폴더에 두면 됨</span>';
+}
+
+/* ── 구간 정의 ── 숫자가 그대로 영상 프롬프트의 초가 된다 ── */
+const PHASES=[
+  {id:'hold',  name:'홀드',      ms:700},
+  {id:'title', name:'타이틀 아웃',ms:450},
+  {id:'exit',  name:'전환',      ms:1000},
+  {id:'gap',   name:'틈',        ms:120},
+  {id:'rise',  name:'B 안착',    ms:900},
+  {id:'settle',name:'카피 인',   ms:600},
+];
+const PHASES_C=[
+  {id:'cHold', name:'홀드',      ms:250},
+  {id:'cOut',  name:'카피 아웃',  ms:350},
+  {id:'cExit', name:'책 물러남',  ms:800},
+  {id:'cZoom', name:'확대샷',    ms:1600},
+  {id:'cWide', name:'후반샷',     ms:1900},
+  {id:'cText', name:'글자',      ms:1000},
+];
+const PHASES_D=[
+  {id:'dOut',  name:'C 물러남',  ms:500},
+  {id:'dMac1', name:'매크로 1',  ms:900},
+  {id:'dMac2', name:'매크로 2',  ms:900},
+  {id:'dWide', name:'시계 클립', ms:2200},
+  {id:'dText', name:'글자',      ms:520},
+];
+const PHASES_E=[
+  {id:'eOut',  name:'D 물러남',  ms:600},
+  {id:'eWing', name:'날개',      ms:1900},
+  {id:'eWide', name:'전체샷',    ms:1650},
+  {id:'eText', name:'글자',      ms:1150},
+];
+const PHASES_F=[
+  {id:'fOut',  name:'E 물러남',   ms:420},
+  {id:'fRise', name:'빛이 차오름',ms:3400},
+  {id:'fHold', name:'조각상',     ms:980},
+  {id:'fText', name:'문구',       ms:840},
+];
+const PHASES_G=[
+  {id:'gOut',  name:'F 문구 아웃',ms:280},
+  {id:'gHands',name:'손·불꽃',    ms:1700},
+  {id:'gHalo', name:'후광이 그려짐',ms:3530},
+  {id:'gText', name:'문구',       ms:910},
+];
+const PHASES_H=[
+  {id:'hOut',  name:'G 문구 아웃',ms:280},
+  {id:'hRise', name:'빛이 들어옴',ms:3530},
+  {id:'hHold', name:'옥좌',       ms:1050},
+  {id:'hText', name:'마지막 문장',ms:1120},
+];
+/* 결과창 — 화이트 아웃으로 세계가 바뀌고, 책 디테일 → 얼굴 → 전체샷 → 문구 */
+const PHASES_R=[
+  {id:'rOut',    name:'화이트 아웃',  ms:900},
+  {id:'rDetail', name:'책 디테일',    ms:2400},
+  {id:'rWide',   name:'전체샷',      ms:2600},
+  {id:'rRecord', name:'기록 번호',    ms:1300},
+  {id:'rTitle',  name:'제목',        ms:1600},
+  {id:'rCta',    name:'열람 안내',    ms:900},
+];
+/* 질문 전용 화면 — 앞 화면의 클립을 그대로 이어 쓰므로 새 영상이 필요 없다 */
+const PHASES_Q1=[{id:'qOut',name:'앞 문구 아웃',ms:400},{id:'qIn',name:'질문',ms:1200}];
+const PHASES_Q2=[{id:'qOut',name:'앞 문구 아웃',ms:400},{id:'qIn',name:'질문',ms:1200}];
+const LEGS={ab:PHASES,bc:PHASES_C,cd:PHASES_D,d2:PHASES_Q1,d3:PHASES_Q2,
+            de:PHASES_E,ef:PHASES_F,fg:PHASES_G,gh:PHASES_H,hr:PHASES_R};
+const ORDER=['ab','bc','cd','d2','d3','de','ef','fg','gh','hr'];
+let leg='ab';
+const TL=()=>LEGS[leg];
+
+const MODES=[
+  {key:'dissolve',name:'흩어짐'},
+  {key:'drop',    name:'낙하'},
+  {key:'motes',   name:'별무리 낙하'},
+];
+let mode='dissolve';
+/* FX 강도 (%) — 마스터에 이미 빛이 있어 기본값이 낮다 */
+const FX={base:12, veil:80};
+
+const $=s=>document.querySelector(s);
+const sceneA=$('#sceneA'), sceneB=$('#sceneB'), curtain=$('#curtain'),
+      sceneC=$('#sceneC'), cV1=$('#c-v1'), cV2=$('#c-v2'), colC=$('#colC'),
+      colQ1=$('#colQ1'),colQ2=$('#colQ2'),qScrim=$('#qScrim'),
+      qBg1=$('#qBg1'),qBg2=$('#qBg2'),
+      sceneD=$('#sceneD'), dM1=$('#d-m1'), dM2=$('#d-m2'), dWide=$('#d-wide'),
+      dFlash=$('#dFlash'), colD=$('#colD'),
+      sceneE=$('#sceneE'), eBg=$('#e-bg'), eV1=$('#e-v1'), eV2=$('#e-v2'), eV3=$('#e-v3'), colE=$('#colE'),
+      sceneF=$('#sceneF'), fV1=$('#f-v1'), fV2=$('#f-v2'), colF=$('#colF'),
+      sceneG=$('#sceneG'), gV1=$('#g-v1'), gV2=$('#g-v2'), gV3=$('#g-v3'), colG=$('#colG'),
+      sceneR=$('#sceneR'),rV1=$('#r-v1'),rV3=$('#r-v3'),colR=$('#colR'),
+      whiteOut=$('#whiteOut'),seaWrap=$('#seaWrap'),
+      seaVid=$('#seaVid'),chap=$('#chap'),chapNo=$('#chapNo'),chapTitle=$('#chapTitle'),seaHint=$('#seaHint'),vignette=$('#vignette'),skipBtn=$('#skip'),
+      rNo=$('#rNo'),rLead=$('#rLead'),rTitle=$('#rTitle'),rSub=$('#rSub'),rCta=$('#rCta'),
+      sceneH=$('#sceneH'), hV1=$('#h-v1'), hV2=$('#h-v2'), colH=$('#colH'),
+      fxDust=$('#fxDust'), fxBurst=$('#fxBurst'), fxShaft=$('#fxShaft'), fxConst=$('#fxConst'),
+      titleWrap=$('#titleWrap'), title=$('#title'), cueA=$('#cueA'), copyB=$('#copyB'),
+      scrub=$('#scrub'), phaseNow=$('#phaseNow'), panel=$('#panel'), toast=$('#toast');
+
+const COL =['.eyebrow','#cTitle','#cSub','#cLead','#cFields','#cGo'].map(q=>colC.querySelector(q));
+const COLD=['.hr','#dTitle','#dSub','#dLead','#dField'].map(q=>colD.querySelector(q));
+const COLE=['.hr','#eTitle','#eSub','#eLead'].map(q=>colE.querySelector(q))
+  .concat([...colE.querySelectorAll('.opt')]);
+const COLF=['.hr','#fTitle','#fSub','#fQ'].map(q=>colF.querySelector(q))
+  .concat([...colF.querySelectorAll('.fopt')]);
+const COLQ1=['.hr','#q1Title','#q1Sub','.qq'].map(q=>colQ1.querySelector(q))
+  .concat([...colQ1.querySelectorAll('.qopt')]);
+const COLQ2=['.hr','#q2Title','#q2Sub','.qq'].map(q=>colQ2.querySelector(q))
+  .concat([...colQ2.querySelectorAll('.qopt')]);
+const COLG=['.hr','#gTitle','#gSub','#gQ'].map(q=>colG.querySelector(q))
+  .concat([...colG.querySelectorAll('.gopt')]);
+const COLH=['#hTitle','#hSub','#hLoz','#hLead','#hGo'].map(q=>colH.querySelector(q));
+
+/* 사용자가 고른 것 — 나중에 사주 API로 함께 넘길 값 */
+const answers={ year:'', month:'', day:'', hour:'',
+                desire:null, recover:null, decide:null, trial:null, absence:null };
+/* 고르면 표시만 하고, 확인 버튼이 떠오른다. 넘어가는 건 사용자가 정한다 */
+function pickOption(scope, sel, key, btn){
+  scope.querySelectorAll(sel).forEach(o=>o.classList.remove('sel'));
+  void btn.offsetWidth;                       // 같은 버튼 재선택 시 금선 애니메이션 재시작
+  btn.classList.add('sel');
+  answers[key]=btn.textContent.trim();
+  const go=scope.querySelector('.goBtn');
+  if(go) go.classList.add('ready');
+}
+document.querySelectorAll('.goBtn').forEach(go=>
+  go.addEventListener('click',e=>{ e.stopPropagation(); goNext(); }));
+[[colE,'.opt','desire'], [colF,'.fopt','trial'], [colG,'.gopt','absence'],
+ [colQ1,'.qopt','recover'], [colQ2,'.qopt','decide']].forEach(([scope,sel,key])=>{
+  scope.querySelectorAll(sel).forEach(btn=>btn.addEventListener('click',e=>{
+    e.stopPropagation(); pickOption(scope,sel,key,btn);
+  }));
+});
+
+/* ── 생년월일 · 시간 드롭다운 ── */
+const fY=$('#fy'), fM=$('#fm'), fD=$('#fd'), fH=$('#fh'), fMin=$('#fmin');
+const pad=n=>String(n).padStart(2,'0');
+function fill(selEl, items, placeholder){
+  selEl.required=true;
+  selEl.innerHTML='<option value="" disabled selected>'+placeholder+'</option>'
+    + items.map(([v,t])=>`<option value="${v}">${t}</option>`).join('');
+}
+const thisYear=new Date().getFullYear();
+const years=[]; for(let y=thisYear;y>=1920;y--) years.push([String(y),String(y)]);
+const months=[]; for(let m=1;m<=12;m++) months.push([pad(m),pad(m)]);
+const hours=[]; for(let h=0;h<24;h++) hours.push([pad(h),pad(h)]);
+hours.push(['unknown','모름']);
+const mins=[]; for(let m=0;m<60;m++) mins.push([pad(m),pad(m)]);
+fill(fY,years,'\u2014\u2014\u2014\u2014'); fill(fM,months,'\u2014\u2014');
+fill(fH,hours,'\u2014\u2014'); fill(fMin,mins,'\u2014\u2014');
+/* 달과 해가 정해지면 그 달에 실제로 있는 날짜만 남긴다 */
+function fillDays(){
+  const y=+fY.value, m=+fM.value;
+  const last=(y&&m)? new Date(y,m,0).getDate() : 31;
+  const keep=fD.value;
+  const days=[]; for(let d=1;d<=last;d++) days.push([pad(d),pad(d)]);
+  fill(fD,days,'\u2014\u2014');
+  if(keep && +keep<=last) fD.value=keep;
+  syncBirth();
+}
+function syncBirth(){
+  answers.year=fY.value; answers.month=fM.value; answers.day=fD.value;
+  $('#cGo').style.opacity=(fY.value&&fM.value&&fD.value)?'':'.4';
+}
+function syncHour(){
+  const unknown=fH.value==='unknown';
+  fMin.disabled=unknown; if(unknown) fMin.value='';
+  answers.hour=unknown?'unknown':(fH.value?fH.value+':'+(fMin.value||'00'):'');
+  $('#dGo').style.opacity=(unknown||fH.value)?'':'.4';
+}
+fY.addEventListener('change',fillDays); fM.addEventListener('change',fillDays);
+fD.addEventListener('change',syncBirth);
+fH.addEventListener('change',syncHour); fMin.addEventListener('change',syncHour);
+fillDays(); syncHour();
+
+/* ── CTA ── */
+$('#cGo').addEventListener('click',e=>{ e.stopPropagation();
+  if(!(fY.value&&fM.value&&fD.value)) return; syncBirth(); goNext(); });
+$('#dGo').addEventListener('click',e=>{ e.stopPropagation();
+  if(!(fH.value)) return; syncHour(); goNext(); });
+$('#hGo').addEventListener('click',e=>{ e.stopPropagation(); goNext(); });
+/* 드롭다운을 누를 때 화면이 넘어가지 않게 */
+[fY,fM,fD,fH,fMin].forEach(el=>el.addEventListener('click',e=>e.stopPropagation()));
+
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const total=()=>TL().reduce((s,p)=>s+p.ms,0);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const ease =t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const out  =t=>1-Math.pow(1-t,3);
+const out4 =t=>1-Math.pow(1-t,4);
+const inQ  =t=>t*t*t*t;
+
+/* ── 잉크 번짐 필터 풀 ──
+   난류로 가장자리를 흔들고, 퍼진 알파를 임계값에서 잘라 덩어리로 만든다.
+   단순 blur와 달리 뿌옇지 않고 잉크처럼 뭉쳐서 번진다. */
+const INK_N=20;
+const inkFx=[];
+(function buildInk(){
+  const NS='http://www.w3.org/2000/svg';
+  const defs=document.querySelector('#inkDefs defs');
+  for(let i=0;i<INK_N;i++){
+    const f=document.createElementNS(NS,'filter');
+    f.setAttribute('id','ink'+i);
+    f.setAttribute('x','-60%'); f.setAttribute('y','-70%');
+    f.setAttribute('width','220%'); f.setAttribute('height','260%');
+    f.setAttribute('color-interpolation-filters','sRGB');
+    const turb=document.createElementNS(NS,'feTurbulence');
+    turb.setAttribute('type','fractalNoise');
+    turb.setAttribute('baseFrequency','0.013 0.021');
+    turb.setAttribute('numOctaves','3');
+    turb.setAttribute('seed',String(3+i*7));
+    turb.setAttribute('result','n');
+    const blur=document.createElementNS(NS,'feGaussianBlur');
+    blur.setAttribute('in','SourceGraphic'); blur.setAttribute('stdDeviation','0');
+    blur.setAttribute('result','b');
+    const disp=document.createElementNS(NS,'feDisplacementMap');
+    disp.setAttribute('in','b'); disp.setAttribute('in2','n'); disp.setAttribute('scale','0');
+    disp.setAttribute('xChannelSelector','R'); disp.setAttribute('yChannelSelector','G');
+    disp.setAttribute('result','d');
+    const cm=document.createElementNS(NS,'feColorMatrix');
+    cm.setAttribute('in','d'); cm.setAttribute('type','matrix');
+    cm.setAttribute('values','1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0');
+    f.append(turb,blur,disp,cm); defs.appendChild(f);
+    inkFx.push({blur,disp,cm});
+  }
+})();
+const inkSlot=new WeakMap(); let inkNext=0;
+function slotOf(el){
+  if(!inkSlot.has(el)) inkSlot.set(el,(inkNext++)%INK_N);
+  return inkSlot.get(el);
+}
+function inkSet(el,k){
+  if(k<=0.004){ el.style.filter='none'; return; }
+  const i=slotOf(el), fx=inkFx[i];
+  fx.blur.setAttribute('stdDeviation',(k*7.5).toFixed(2));
+  fx.disp.setAttribute('scale',(k*34).toFixed(1));
+  const K=1+k*16, T=k*7.4;
+  fx.cm.setAttribute('values',`1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 ${K.toFixed(2)} ${(-T).toFixed(2)}`);
+  el.style.filter=`url(#ink${i})`;
+}
+
+function inkIn(el,p,dx,dy){
+  if(!el) return;
+  const lp=clamp(p,0,1);
+  inkSet(el,Math.pow(1-lp,1.25));           // 초반에 세게 번지고 뒤는 빠르게 풀린다
+  el.style.opacity=Math.min(1,Math.pow(lp,0.42)*1.2);
+  const r=1-out(lp);
+  el.style.transform=`translate(${(r*(dx||0)).toFixed(2)}px,${(r*(dy===undefined?16:dy)).toFixed(2)}px)`;
+}
+function inkOut(el,p,dx,dy){
+  if(!el) return;
+  const lp=clamp(p,0,1);
+  inkSet(el,Math.pow(lp,1.15));
+  el.style.opacity=1-Math.pow(lp,1.8);
+  const q=out(lp);
+  el.style.transform=`translate(${(q*(dx||0)).toFixed(2)}px,${(q*(dy===undefined?-14:dy)).toFixed(2)}px)`;
+}                    // 가속 — "훅" 떨어지는 느낌
+function local(t,id){
+  let s=0;
+  for(const p of TL()){
+    if(p.id===id) return p.ms===0?(t>=s?1:0):clamp((t-s)/p.ms,0,1);
+    s+=p.ms;
+  }
+  return 0;
+}
+function setMask(el,css){
+  el.style.webkitMaskImage=css; el.style.maskImage=css;
+  el.style.webkitMaskSize='100% 100%'; el.style.maskSize='100% 100%';
+}
+
+let amb=0;
+function render(t){
+  if(leg!=='d2'&&leg!=='d3'){ qScrim.style.opacity=0; qBg1.style.opacity=0; qBg2.style.opacity=0; }
+  if(leg!=='hr'){ vignette.style.opacity=1; skipBtn.classList.remove('light'); }
+  if(leg!=='hr' && seaP!==0){ seaP=0; applySea(); }
+  if(leg!=='ab'){                       // A씬 텍스트가 다음 화면까지 남지 않게
+    titleWrap.style.opacity=0; cueA.style.opacity=0;
+    titleWrap.style.filter='none'; cueA.style.filter='none';
+  }
+  if(leg==='bc'){ renderBC(t); return; }
+  if(leg==='cd'){ renderCD(t); return; }
+  if(leg==='d2'){ renderQ(t,colD,colQ1,COLQ1); return; }
+  if(leg==='d3'){ renderQ(t,colQ1,colQ2,COLQ2); return; }
+  if(leg==='de'){ renderDE(t); return; }
+  if(leg==='ef'){ renderEF(t); return; }
+  if(leg==='fg'){ renderFG(t); return; }
+  if(leg==='gh'){ renderGH(t); return; }
+  if(leg==='hr'){ renderHR(t); return; }
+  sceneC.style.opacity=0; colC.style.opacity=0; cV1.style.opacity=0; cV2.style.opacity=0;
+  sceneD.style.opacity=0; colD.style.opacity=0; colQ1.style.opacity=0; colQ2.style.opacity=0;
+  sceneE.style.opacity=0; colE.style.opacity=0;
+  eV1.style.opacity=0; eV2.style.opacity=0; eV3.style.opacity=0;
+  sceneF.style.opacity=0; colF.style.opacity=0; fV1.style.opacity=0; fV2.style.opacity=0;
+  sceneG.style.opacity=0; colG.style.opacity=0;
+  gV1.style.opacity=0; gV2.style.opacity=0; gV3.style.opacity=0; gV3.style.transform='none';
+  sceneH.style.opacity=0; colH.style.opacity=0; hV1.style.opacity=0; hV2.style.opacity=0;
+  sceneR.style.opacity=0; colR.style.opacity=0; whiteOut.style.opacity=0;
+  rV1.style.opacity=0; rV3.style.opacity=0;
+  const pT=local(t,'title'), pE=local(t,'exit'),
+        pG=local(t,'gap'),   pR=local(t,'rise'), pS=local(t,'settle');
+
+  /* 타이틀 — 자간 벌어지며 위로 빠짐 (공통) */
+  const pH=local(t,'hold');
+  if(pT>0) inkOut(titleWrap,pT,0,-14);
+  else     inkIn(titleWrap,clamp(pH/0.85,0,1),0,14);
+  title.style.letterSpacing=(0.24+out(pT)*0.15).toFixed(3)+'em';
+  if(pT>0) inkOut(cueA,clamp(pT*1.7,0,1),0,-8);
+  else     inkIn(cueA,clamp((pH-0.25)/0.7,0,1),0,10);
+
+  /* B는 항상 A 밑에 깔려 있음 — A가 비켜나는 만큼 드러남 */
+  sceneB.style.opacity=1;
+  const arrive=out4(Math.max(pE*.4,pR));
+  sceneB.style.transform=`translateY(${(1-arrive)*3}%) scale(${1.035-arrive*.035})`;
+  sceneB.style.filter=`brightness(${.34+out(Math.max(pE*.55,pR))*.66})`;
+
+  let dustBoost=0, curtainVal=0;
+
+  if(mode==='dissolve'){
+    /* A가 아래에서 위로 사라락 지워짐. 경계에 부드러운 결. */
+    const p=out(pE);
+    const edge=-24+p*152;
+    setMask(sceneA,`linear-gradient(to top,`
+      +`rgba(0,0,0,0) ${edge}%,`
+      +`rgba(0,0,0,.35) ${edge+9}%,`
+      +`rgba(0,0,0,1) ${edge+26}%)`);
+    sceneA.style.transform='none';
+    sceneA.style.filter='none';
+    sceneA.style.opacity=1-clamp((pE-.88)/.12,0,1);
+    dustBoost=Math.sin(Math.PI*clamp(pE*1.05,0,1))*.9;   // 지워지는 동안 최고조
+    curtainVal=0;
+
+  }else if(mode==='drop'){
+    /* 훅 떨어짐 — 가속 이징 + 미세 회전 + 모션블러 */
+    const p=inQ(pE);
+    setMask(sceneA,'none');
+    sceneA.style.transform=`translateY(${p*118}%) scale(${1-p*.04}) rotate(${p*1.6}deg)`;
+    sceneA.style.filter=`blur(${p*7}px) brightness(${1-p*.35})`;
+    sceneA.style.opacity=1-clamp((pE-.72)/.28,0,1);
+    dustBoost=clamp((pE-.45)/.4,0,1)*.55;                // 떨어진 뒤 먼지가 인다
+    curtainVal=0;
+
+  }else{
+    /* 별무리가 위에서 쏟아져 내려와 덮고, 걷히면서 B가 남음 */
+    const cover=Math.sin(Math.PI*clamp(pE,0,1));
+    setMask(sceneA,'none');
+    sceneA.style.transform='none';
+    sceneA.style.filter=`brightness(${1-out(pE)*.55})`;
+    sceneA.style.opacity=1-clamp((pE-.42)/.3,0,1);
+    dustBoost=cover;
+    curtainVal=cover*.55;
+  }
+
+  if(pG>0&&pR===0) curtainVal=Math.max(curtainVal,mode==='motes'?.3:0);
+  curtain.style.opacity=curtainVal;
+
+  /* FX — 마스터에 이미 빛이 있으므로 평상시엔 거의 끔 */
+  const F=FX.base/100, V=FX.veil/100;
+
+  /* 앰비언트 별무리 — 항상 낮게 깔림 */
+  fxDust.style.opacity=F*.85+dustBoost*V*.25;
+  fxDust.style.transform='scale(1.02)';
+
+  /* 전환 버스트 — 흩어지거나 차오르는 순간에만 */
+  fxBurst.style.opacity=dustBoost*V;
+  fxBurst.style.transform=
+    `translateY(${mode==='motes'? -28+out(pE)*34 : 0}%) scale(1.05)`;
+  fxBurst.playbackRate=0.75+dustBoost*0.9;      // 쏟아질수록 빨라짐
+  fxShaft.style.opacity=F*.42;
+  fxConst.style.opacity=F*.8*(1-out(pE));
+
+  inkIn(copyB,pS,0,16);
+
+  markPhase(t);
+}
+
+
+function renderBC(t){
+  const pO=local(t,'cOut'), pE=local(t,'cExit'),
+        pZ=local(t,'cZoom'), pW=local(t,'cWide'), pX=local(t,'cText');
+
+  sceneA.style.opacity=0;
+  sceneB.style.opacity=1; sceneB.style.transform='none';
+  sceneB.style.filter=`brightness(${1-out(pE)*.97}) blur(${out(pE)*4}px)`;
+  inkOut(copyB,pO,0,-12);
+
+  sceneC.style.opacity=pE>0?1:0;
+  sceneC.style.transform='none'; sceneC.style.filter='none';
+
+  /* 정지 배경은 클립이 붙기 전 잠깐만 */
+  $('#c-bg').style.opacity=(pZ>0)?0:1;
+  $('#c-bg').style.filter=`brightness(${.04+out(pE)*.10})`;
+
+  /* 확대샷 → 컷 → 후반샷. 후반샷은 마지막 프레임에서 멈춰 배경이 된다. */
+  const onV1=pZ>0&&pW===0, onV2=pW>0;
+  cV1.style.opacity=onV1?1:0;
+  cV2.style.opacity=onV2?1:0;
+  syncClip(cV1,pZ,onV1,false);
+  syncClip(cV2,pW,onV2,true);      // 후반샷은 글자가 뜬 뒤에도 계속 돈다
+
+  colC.style.opacity=pX>0?1:0; colC.style.filter='none'; colC.style.transform='none';
+  COL.forEach((el,i)=>inkIn(el,clamp((pX-i*0.068)/0.44,0,1),-18,10));
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.7; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=0;
+  curtain.style.opacity=0;
+
+  markPhase(t);
+}
+
+
+function renderEF(t){
+  const pO=local(t,'fOut'), pR=local(t,'fRise'),
+        pH=local(t,'fHold'), pX=local(t,'fText');
+
+  sceneA.style.opacity=0; sceneB.style.opacity=0; sceneC.style.opacity=0; sceneD.style.opacity=0;
+  colC.style.opacity=0; colD.style.opacity=0; copyB.style.opacity=0;
+  colQ1.style.opacity=0; colQ2.style.opacity=0;
+  cV1.style.opacity=0; cV2.style.opacity=0;
+
+  /* E는 어둠으로 물러난다 */
+  sceneE.style.opacity=pO<1?1:0;
+  eV1.style.opacity=0; eV2.style.opacity=0; eV3.style.opacity=1;
+  eV3.style.filter=`brightness(${1-out(pO)})`;
+  inkOut(colE,pO,14,-10);
+  if(pO>=1){ eV3.loop=false; if(!eV3.paused) eV3.pause(); }
+
+  sceneF.style.opacity=pO>0?1:0;
+  sceneG.style.opacity=0; colG.style.opacity=0;
+  gV1.style.opacity=0; gV2.style.opacity=0; gV3.style.opacity=0; gV3.style.transform='none';
+  sceneH.style.opacity=0; colH.style.opacity=0; hV1.style.opacity=0; hV2.style.opacity=0;
+  sceneR.style.opacity=0; colR.style.opacity=0; whiteOut.style.opacity=0;
+  rV1.style.opacity=0; rV3.style.opacity=0;
+
+  /* 역재생 클립 — 어둠에서 빛이 차오른다. 끝에서 다음 클립과 겹친다. */
+  const xf=clamp((pR-0.74)/0.26,0,1);        // 마지막 26%에서 교차
+  const onV1=pR>0&&pH===0;
+  fV1.style.opacity=onV1?1-ease(xf):0;
+  fV1.style.transform='scale(1)';
+  syncClip(fV1,pR,onV1,false);
+
+  /* 조각상 클립 — 겹침이 시작되면 켜지고 이후 계속 돈다 */
+  const showV2=(pR>0.74)||pH>0;
+  fV2.style.opacity=showV2?(pH>0?1:ease(xf)):0;
+  fV2.style.transform='scale(1)';
+  if(showV2){
+    if(fV2.paused&&playing) fV2.play().catch(()=>{});
+    if(!playing&&!fV2.paused) fV2.pause();
+  }else if(!fV2.paused){ fV2.pause(); fV2.currentTime=0; }
+
+  colF.style.opacity=pX>0?1:0; colF.style.filter='none'; colF.style.transform='none';
+  COLF.forEach((el,i)=>inkIn(el,clamp((pX-i*0.062)/0.44,0,1),18,10));
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.7; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=0;
+  curtain.style.opacity=0;
+
+  markPhase(t);
+}
+
+
+function renderFG(t){
+  const pO=local(t,'gOut'), p1=local(t,'gHands'),
+        p2=local(t,'gHalo'), pX=local(t,'gText');
+
+  sceneA.style.opacity=0; sceneB.style.opacity=0; sceneC.style.opacity=0;
+  sceneD.style.opacity=0; sceneE.style.opacity=0;
+  colC.style.opacity=0; colD.style.opacity=0; colE.style.opacity=0;
+  colQ1.style.opacity=0; colQ2.style.opacity=0; copyB.style.opacity=0;
+  cV1.style.opacity=0; cV2.style.opacity=0;
+  eV1.style.opacity=0; eV2.style.opacity=0; eV3.style.opacity=0;
+
+  /* F는 검은 화면을 거치지 않고, 다음 클립과 겹치며 물러난다.
+     두 클립이 동시에 돌아가는 구간이 있어야 컷으로 안 읽힌다. */
+  const xd=p1>0?ease(clamp(p1/0.38,0,1)):0;      // 0 → 1 교차
+  sceneF.style.opacity=xd<1?1:0;
+  fV1.style.opacity=0; fV2.style.opacity=1;
+  fV2.style.filter=`brightness(${1-xd*.85}) blur(${(xd*4).toFixed(2)}px)`;
+  fV2.style.transform=`scale(${1+xd*.04})`;
+  inkOut(colF,pO,14,-10);
+  if(xd>=1){ fV2.loop=false; if(!fV2.paused) fV2.pause(); }
+  else if(fV2.paused&&playing){ fV2.play().catch(()=>{}); }
+
+  sceneG.style.opacity=p1>0?xd:0;
+  sceneH.style.opacity=0; colH.style.opacity=0; hV1.style.opacity=0; hV2.style.opacity=0;
+  sceneR.style.opacity=0; colR.style.opacity=0; whiteOut.style.opacity=0;
+  rV1.style.opacity=0; rV3.style.opacity=0;
+
+  /* 손 안의 불 → 컷 → 후광이 그려지는 전체샷 */
+  const on1=p1>0&&p2===0, on2=p2>0&&p2<1, on3=p2>=1;
+  gV1.style.opacity=on1?1:0;
+  gV1.style.transform=`scale(${1.05-xd*.05})`;
+  gV2.style.opacity=(on2||on3)?(on3?0:1):0;
+  gV3.style.opacity=on3?1:0;                 // 마지막 프레임에서 이어받아 계속 돈다
+  syncClip(gV1,p1,on1,false);
+  syncClip(gV2,p2,on2,false);
+  if(on3){ if(gV3.paused&&playing) gV3.play().catch(()=>{}); }
+  else if(!gV3.paused){ gV3.pause(); gV3.currentTime=0; }
+
+  colG.style.opacity=pX>0?1:0; colG.style.filter='none'; colG.style.transform='none';
+  COLG.forEach((el,i)=>inkIn(el,clamp((pX-i*0.055)/0.44,0,1),0,14));
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.55; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=0;
+  curtain.style.opacity=0;
+
+  markPhase(t);
+}
+
+
+function renderGH(t){
+  const pO=local(t,'hOut'), pR=local(t,'hRise'),
+        pH=local(t,'hHold'), pX=local(t,'hText');
+
+  sceneA.style.opacity=0; sceneB.style.opacity=0; sceneC.style.opacity=0;
+  sceneD.style.opacity=0; sceneE.style.opacity=0; sceneF.style.opacity=0;
+  colC.style.opacity=0; colD.style.opacity=0; colE.style.opacity=0;
+  colQ1.style.opacity=0; colQ2.style.opacity=0;
+  colF.style.opacity=0; copyB.style.opacity=0;
+  cV1.style.opacity=0; cV2.style.opacity=0;
+  eV1.style.opacity=0; eV2.style.opacity=0; eV3.style.opacity=0;
+  fV1.style.opacity=0; fV2.style.opacity=0;
+
+  /* G도 마찬가지로 겹치며 물러난다 */
+  const xd=pR>0?ease(clamp(pR/0.34,0,1)):0;
+  sceneG.style.opacity=xd<1?1:0;
+  gV1.style.opacity=0; gV2.style.opacity=0; gV3.style.opacity=1;
+  gV3.style.filter=`brightness(${1-xd*.9}) blur(${(xd*4).toFixed(2)}px)`;
+  gV3.style.transform=`scale(${1+xd*.05})`;
+  inkOut(colG,pO,0,-12);
+  if(xd>=1){ gV3.loop=false; if(!gV3.paused) gV3.pause(); }
+  else if(gV3.paused&&playing){ gV3.play().catch(()=>{}); }
+
+  sceneH.style.opacity=pR>0?xd:0;
+
+  /* h-clip1(어두운 조각상) 제거. 밝은 조각상이 sceneH 자체 페이드로 바로 올라온다 */
+  hV1.style.opacity=0;
+
+  const showV2=pR>0||pH>0;
+  hV2.style.opacity=showV2?1:0;
+  if(showV2){ if(hV2.paused&&playing) hV2.play().catch(()=>{}); }
+  else if(!hV2.paused){ hV2.pause(); hV2.currentTime=0; }
+
+  colH.style.opacity=pX>0?1:0; colH.style.filter='none'; colH.style.transform='none';
+  COLH.forEach((el,i)=>inkIn(el,clamp((pX-i*0.055)/0.44,0,1),0,14));
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.5; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=0;
+  curtain.style.opacity=0;
+
+  markPhase(t);
+}
+
+
+function renderHR(t){
+  const pO=local(t,'rOut'), p1=local(t,'rDetail'),
+        p3=local(t,'rWide'), pN=local(t,'rRecord'), pT=local(t,'rTitle'), pC=local(t,'rCta');
+
+  sceneA.style.opacity=0; sceneB.style.opacity=0; sceneC.style.opacity=0;
+  sceneD.style.opacity=0; sceneE.style.opacity=0; sceneF.style.opacity=0;
+  colC.style.opacity=0; colD.style.opacity=0; colE.style.opacity=0;
+  colQ1.style.opacity=0; colQ2.style.opacity=0;
+  colF.style.opacity=0; colG.style.opacity=0; copyB.style.opacity=0;
+  cV1.style.opacity=0; cV2.style.opacity=0;
+  eV1.style.opacity=0; eV2.style.opacity=0; eV3.style.opacity=0;
+  fV1.style.opacity=0; fV2.style.opacity=0;
+  gV1.style.opacity=0; gV2.style.opacity=0; gV3.style.opacity=0;
+
+  /* H는 밝아지면서 하얗게 날아간다 — 결과창이 밝은 세계라 암전보다 이쪽이 맞다 */
+  sceneH.style.opacity=p1>0.5?0:1;
+  hV1.style.opacity=0; hV2.style.opacity=1;
+  hV2.style.filter=`brightness(${1+out(pO)*1.6})`;
+  inkOut(colH,pO,0,-12);
+  if(pO>=1){ hV2.loop=false; if(!hV2.paused) hV2.pause(); }
+
+  whiteOut.style.opacity=(p1>0 ? 1-ease(clamp(p1/0.38,0,1)) : ease(pO)).toFixed(3);
+
+  sceneR.style.opacity=p1>0?1:0;
+  const on1=p1>0&&p3===0, on3=p3>0;
+  rV1.style.opacity=on1?1:0;
+  rV3.style.opacity=on3?1:0;
+  syncClip(rV1,p1,on1,false);
+  if(on3){ if(rV3.paused&&playing) rV3.play().catch(()=>{}); }
+  else if(!rV3.paused){ rV3.pause(); rV3.currentTime=0; }
+
+  /* 기록 번호 → (사이를 두고) 제목 → 열람 안내 */
+  /* 바다가 차오른 만큼 표지 문구가 물러난다 */
+  const seaE=1-Math.pow(1-seaP,3);
+  colR.style.opacity=(pN>0?1:0)*(1-Math.min(1,seaP*1.6));
+  colR.style.filter='none';
+  colR.style.transform=`translateY(${(-seaE*26).toFixed(1)}px)`;
+  inkIn(rNo,   clamp(pN/0.7,0,1), 0, 12);
+  inkIn(rLead, clamp((pN-0.22)/0.7,0,1), 0, 12);
+  inkIn(rTitle,clamp(pT/0.62,0,1), 0, 16);
+  inkIn(rSub,  clamp((pT-0.24)/0.62,0,1), 0, 14);
+  inkIn(rCta,  clamp(pC,0,1), 0, 12);
+
+  /* 어두운 세계용 비네트를 밝은 결과창에 그대로 두면 가장자리가 새까맣게 눌린다 */
+  vignette.style.opacity=(p1>0 ? 1-ease(clamp(p1/0.45,0,1)) : 1).toFixed(3);
+  skipBtn.classList.toggle('light', p1>0.5);
+
+  fxDust.style.opacity=0; fxBurst.style.opacity=0; curtain.style.opacity=0;
+  markPhase(t);
+}
+
+
+/* ── 바다 ────────────────────────────────────────────────
+   표지가 끝난 뒤 스크롤/드래그로 seaP(0~1)가 올라가고,
+   그만큼 수평선이 차오른다. 영상이 아니라 캔버스로 그린다. */
+let seaP=0;
+
+/* ── 클립 지연 로드 ──────────────────────────────────────
+   17개를 첫 진입에 다 받으면 회선을 통째로 먹는다.
+   현재·다음 구간을 우선 받고, 나머지는 뒤에서 하나씩 순서대로 채운다. */
+const CLIPS={
+  ab:[], bc:[cV1,cV2], cd:[dWide], d2:[], d3:[], de:[eV1,eV2,eV3],
+  ef:[fV1,fV2], fg:[gV1,gV2,gV3], gh:[hV2], hr:[rV1,rV3,seaVid],
+};
+/* TRIAL 이후 세 구간을 1/0.7배로 줄였다. 구간 길이가 곧 클립 길이였으므로
+   같은 배수로 재생해야 샷이 중간에 잘리지 않는다.
+   h-v2는 ORACLE에서 그대로 루프하는 배경이라 원래 속도를 지킨다 */
+const LATE_RATE=1/0.70;
+[fV1,fV2,gV1,gV2,gV3].forEach(v=>{ if(v) v.playbackRate=LATE_RATE; });
+const warmed=new WeakSet();
+function warm(v){
+  if(!v||warmed.has(v)) return Promise.resolve();
+  warmed.add(v);
+  v.preload='auto';
+  try{ v.load(); }catch(e){}
+  return new Promise(res=>{
+    if(v.readyState>=3) return res();
+    const done=()=>{ v.removeEventListener('canplaythrough',done); res(); };
+    v.addEventListener('canplaythrough',done);
+    setTimeout(done,7000);                 // 느린 회선에서 막히지 않게
+  });
+}
+function warmLeg(l){ (CLIPS[l]||[]).forEach(warm); }
+/* 우선순위: 지금 구간 → 다음 구간 → 그 외를 순서대로 */
+async function warmQueue(){
+  for(const l of ORDER){
+    for(const v of CLIPS[l]) await warm(v);
+  }
+}
+function primeFrom(l){
+  const i=ORDER.indexOf(l);
+  warmLeg(ORDER[i]); warmLeg(ORDER[i+1]);
+}
+
+/* 표지 → 바다. 스크롤·드래그·CTA 어느 쪽으로도 진행된다. */
+let seaOver=0;
+function seaAdd(d){
+  if(!(leg==='hr' && !playing && t>=total())) return false;
+  if(seaP>=1 && d>0){                       // 다 차오른 뒤 계속 밀면 결과를 연다
+    seaOver+=d;
+    if(seaOver>0.5){ seaOver=0; handoff(); location.href='./result.html'; }
+    return true;
+  }
+  const before=seaP;
+  seaP=clamp(seaP+d,0,1);
+  if(seaP!==before){ applySea(); return true; }
+  return seaP>0;
+}
+function applySea(){
+  const e=1-Math.pow(1-seaP,3);
+  /* 정원과 바다를 겹쳐 넘긴다 — 둘 다 하늘이 위에 있어 한 세계로 이어진다 */
+  seaWrap.style.opacity=e.toFixed(3);
+  seaWrap.style.transform=`translateY(${((1-e)*9).toFixed(2)}%) scale(${(1.05-e*0.05).toFixed(3)})`;
+  if(e>0.02){ if(seaVid.paused) seaVid.play().catch(()=>{}); }
+  else if(!seaVid.paused){ seaVid.pause(); }
+  /* 정원은 위로 밀려 올라가며 물러난다 */
+  rV3.style.transform=`translateY(${(-e*12).toFixed(2)}%) scale(${(1+e*0.06).toFixed(3)})`;
+  seaHint.style.opacity=(seaP>0.04&&seaP<0.9)?(1-seaP)*0.7:0;
+  const cp=clamp((seaP-0.55)/0.45,0,1);
+  chap.style.opacity=cp>0?1:0;
+  inkIn(chapNo,   clamp(cp/0.7,0,1), 0, 12);
+  inkIn(chapTitle,clamp((cp-0.2)/0.8,0,1), 0, 16);
+  toResult.classList.toggle('on', seaP>=0.999);
+}
+
+
+/* 질문 전용 화면 — 시계 클립을 계속 돌리고 문구만 갈아끼운다 */
+function renderQ(t,prevCol,col,COLS){
+  const pO=local(t,'qOut'), pX=local(t,'qIn');
+  sceneA.style.opacity=0; sceneB.style.opacity=0; sceneC.style.opacity=0;
+  sceneE.style.opacity=0; sceneF.style.opacity=0; sceneG.style.opacity=0;
+  sceneH.style.opacity=0; sceneR.style.opacity=0;
+  cV1.style.opacity=0; cV2.style.opacity=0; copyB.style.opacity=0;
+  colC.style.opacity=0; colE.style.opacity=0; colF.style.opacity=0;
+  colG.style.opacity=0; colH.style.opacity=0; colR.style.opacity=0;
+
+  /* 시계 위에 글을 얹으면 다이얼과 겹쳐 안 읽힌다 — 좌측이 비어 있는 전용 배경으로 교체 */
+  const bg = (col===colQ1)?qBg1:qBg2, other=(col===colQ1)?qBg2:qBg1;
+  const fade=ease(clamp(pO/0.8,0,1));
+  sceneD.style.opacity=1-fade;
+  dM1.style.opacity=0; dM2.style.opacity=0; dWide.style.opacity=1;
+  dWide.style.transform='none'; dWide.style.filter='none'; dFlash.style.opacity=0;
+  if(fade>=1){ if(!dWide.paused) dWide.pause(); }
+  bg.style.opacity=fade; other.style.opacity=0;
+
+  [colD,colQ1,colQ2].forEach(c=>{ if(c!==prevCol&&c!==col) c.style.opacity=0; });
+  inkOut(prevCol,pO,-14,-10);
+  col.style.opacity=pX>0?1:0; col.style.filter='none'; col.style.transform='none';
+  COLS.forEach((el,i)=>inkIn(el,clamp((pX-i*0.068)/0.44,0,1),-18,10));
+  qScrim.style.opacity=(pX>0?Math.min(1,pX*2.2):0).toFixed(2);
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.7; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=0; curtain.style.opacity=0;
+  markPhase(t);
+}
+
+/* 타임라인과 클립을 맞춘다.
+   구간이 끝나면 hold=true — 핑퐁 루프로 계속 돌게 두고 더는 건드리지 않는다.
+   파일은 정방향+역방향이 이어붙은 핑퐁이라 어디서 감아도 이음매가 없다. */
+function syncClip(v,p,active,hold){
+  if(!active){ v.loop=false; if(!v.paused) v.pause(); return; }
+  const full=v.duration||0;
+  if(!full){                       // 아직 메타데이터가 없어도 일단 재생은 시작
+    if(playing && v.paused) v.play().catch(()=>{});
+    return;
+  }
+  const fwd=parseFloat(v.dataset.fwd)||full;      // 정방향 구간 길이
+  if(hold&&p>=1){
+    v.loop=true;
+    if(v.paused) v.play().catch(()=>{});
+    return;                                        // 이후엔 브라우저에 맡김
+  }
+  v.loop=false;
+  if(playing){
+    if(v.paused){ v.currentTime=clamp(p*fwd,0,full-0.02); v.play().catch(()=>{}); }
+  }else{
+    if(!v.paused) v.pause();
+    v.currentTime=clamp(p*fwd,0,full-0.02);
+  }
+}
+
+function renderCD(t){
+  const pO=local(t,'dOut'), p1=local(t,'dMac1'), p2=local(t,'dMac2'),
+        pW=local(t,'dWide'), pX=local(t,'dText');
+
+  /* B→C의 끝 상태 유지 후 C를 어둠으로 */
+  sceneA.style.opacity=0; sceneB.style.opacity=0;
+  sceneC.style.opacity=pO<1?1:0;
+  sceneC.style.filter=`brightness(${1-out(pO)})`;
+
+  inkOut(colC,pO,-14,-10);
+  copyB.style.opacity=0;
+
+  sceneD.style.opacity=pO>0?1:0;
+  sceneE.style.opacity=0; colE.style.opacity=0;
+  eV1.style.opacity=0; eV2.style.opacity=0; eV3.style.opacity=0;
+  sceneF.style.opacity=0; colF.style.opacity=0; fV1.style.opacity=0; fV2.style.opacity=0;
+  sceneG.style.opacity=0; colG.style.opacity=0;
+  gV1.style.opacity=0; gV2.style.opacity=0; gV3.style.opacity=0; gV3.style.transform='none';
+  sceneH.style.opacity=0; colH.style.opacity=0; hV1.style.opacity=0; hV2.style.opacity=0;
+  sceneR.style.opacity=0; colR.style.opacity=0; whiteOut.style.opacity=0;
+  rV1.style.opacity=0; rV3.style.opacity=0;
+
+  /* 매크로는 컷으로 갈아탄다. 각 컷 안에서는 아주 느린 밀기만. */
+  const cut1=p1>0&&p2===0, cut2=p2>0&&pW===0, wide=pW>0;
+  /* 컷1 — 링을 따라 아래로 흐르며 아주 천천히 밀기 */
+  dM1.style.opacity=cut1?1:0;
+  dM1.style.transform=`translate(${-p1*2.2}%,${p1*1.6}%) scale(${1.04+p1*.07})`;
+
+  /* 컷2 — 눈금판 호를 따라 옆으로만. 크기는 고정. */
+  dM2.style.opacity=cut2?1:0;
+  dM2.style.transform=`translateX(${2.6-p2*4.4}%) scale(1.07)`;
+
+  /* 컷3 — 시계 클립. 금빛 하이라이트가 먼저 보이도록 모바일 프레임에서는 살짝 확대한다. */
+  dWide.style.opacity=wide?1:0;
+  dWide.style.transform=matchMedia('(max-width:760px), (orientation:portrait)').matches
+    ? 'translate(-3%, -11%) scale(1.18)'
+    : 'translateY(-5%) scale(1.1)';
+  dWide.style.filter='none';
+  syncClip(dWide,pW,wide,true);    // 시계도 계속 돈다
+
+  /* 컷 지점마다 아주 짧은 광량 튐 — 하드컷을 붙여주는 역할 */
+  const f1=p1>0&&p1<.09?1-p1/.09:0;
+  const f2=p2>0&&p2<.09?1-p2/.09:0;
+  const f3=pW>0&&pW<.12?1-pW/.12:0;
+  dFlash.style.opacity=Math.max(f1,f2,f3*1.15)*.3;
+
+  colD.style.opacity=pX>0?1:0; colD.style.filter='none'; colD.style.transform='none';
+  COLD.forEach((el,i)=>inkIn(el,clamp((pX-i*0.032)/0.22,0,1),-10,6));
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.7; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=Math.max(f1,f2,f3)*.35*(FX.veil/100);
+  fxBurst.style.transform='scale(1.05)';
+  curtain.style.opacity=0;
+
+  markPhase(t);
+}
+
+
+function renderDE(t){
+  const pO=local(t,'eOut'), p2=local(t,'eWing'),
+        p3=local(t,'eWide'), pX=local(t,'eText');
+
+  sceneA.style.opacity=0; sceneB.style.opacity=0; sceneC.style.opacity=0;
+  colC.style.opacity=0; copyB.style.opacity=0;
+  cV1.style.opacity=0; cV2.style.opacity=0;
+
+  /* D는 어둠으로 물러난다 */
+  sceneD.style.opacity=pO<1?1:0;
+  dM1.style.opacity=0; dM2.style.opacity=0; dWide.style.opacity=1;
+  dWide.style.transform='none';
+  dWide.style.filter=`brightness(${1-out(pO)})`;
+  dFlash.style.opacity=0;
+  inkOut(colQ2,pO,-14,-10); colD.style.opacity=0;
+  if(pO>=1){ dWide.loop=false; if(!dWide.paused) dWide.pause(); }
+
+  /* E — 무서운 얼굴 클로즈업은 건너뛰고, 날개 컷 → 전체샷만 사용한다. */
+  sceneE.style.opacity=pO>0?1:0;
+  sceneE.style.transform='none'; sceneE.style.filter='none';
+  sceneF.style.opacity=0; colF.style.opacity=0; fV1.style.opacity=0; fV2.style.opacity=0;
+  sceneG.style.opacity=0; colG.style.opacity=0;
+  gV1.style.opacity=0; gV2.style.opacity=0; gV3.style.opacity=0; gV3.style.transform='none';
+  sceneH.style.opacity=0; colH.style.opacity=0; hV1.style.opacity=0; hV2.style.opacity=0;
+  sceneR.style.opacity=0; colR.style.opacity=0; whiteOut.style.opacity=0;
+  rV1.style.opacity=0; rV3.style.opacity=0;
+  eBg.style.opacity=(p2>0||p3>0)?0:1;
+  eBg.style.filter=`brightness(${.04+out(pO)*.10})`;
+
+  const on2=p2>0&&p3===0, on3=p3>0;
+  eV1.style.opacity=0;
+  eV2.style.opacity=on2?1:0;
+  eV3.style.opacity=on3?1:0;
+  syncClip(eV1,0,false,false);
+  syncClip(eV2,p2,on2,false);
+  syncClip(eV3,p3,on3,true);
+
+  colE.style.opacity=pX>0?1:0; colE.style.filter='none'; colE.style.transform='none';
+  COLE.forEach((el,i)=>inkIn(el,clamp((pX-i*0.062)/0.44,0,1),18,10));
+
+  const F=FX.base/100;
+  fxDust.style.opacity=F*.7; fxDust.style.transform='scale(1.02)';
+  fxBurst.style.opacity=0;
+  curtain.style.opacity=0;
+
+  markPhase(t);
+}
+
+function markPhase(t){
+  let acc=0,cur=TL()[TL().length-1];
+  for(const p of TL()){ if(t<acc+p.ms){cur=p;break;} acc+=p.ms; }
+  phaseNow.textContent=`${cur.name} · ${Math.round(t)}ms`;
+  TL().forEach(p=>{
+    const b=document.querySelector(`[data-bar="${p.id}"]`);
+    if(b) b.style.width=(local(t,p.id)*100)+'%';
+  });
+}
+
+let t=0,playing=false,last=0,stopAt=null;   // stopAt: 여기까지만 재생하고 멈춘다
+function loop(ts){
+  if(!last) last=ts;
+  const dt=Math.min(ts-last,60); last=ts;   // 한 프레임에 60ms 이상은 건너뛰지 않는다
+  amb+=dt/1000*.35;
+  if(playing){
+    t+=dt;
+    if(stopAt!==null && t>=stopAt){ t=stopAt; playing=false; stopAt=null; }
+    else if(t>=total()){ t=total(); playing=false; }
+    scrub.value=(t/total())*1000;
+  }
+  render(t);
+  gateClicks();
+  requestAnimationFrame(loop);
+}
+/* 지금 떠 있는 컬럼만 눌리게 한다 */
+const GATED=[colC,colD,colE,colF,colG,colH,colQ1,colQ2,colR,copyB];
+function gateClicks(){
+  for(const c of GATED){
+    const on=(parseFloat(c.style.opacity)||0)>0.5;
+    c.classList.toggle('colOff',!on);
+  }
+}
+function play(){ if(reduced){t=total();scrub.value=1000;render(t);return;} t=0;playing=true;last=0; }
+/* 이 구간들은 끝에 답을 요구한다. 스크롤·클릭으로 그냥 지나갈 수 없다 */
+const NEEDS={
+  bc:()=>!!(answers.year&&answers.month&&answers.day),
+  cd:()=>!!answers.hour,
+  d2:()=>!!answers.recover,  d3:()=>!!answers.decide,
+  de:()=>!!answers.desire,   ef:()=>!!answers.trial,  fg:()=>!!answers.absence,
+};
+const NEEDCOL={bc:'colC',cd:'colD',d2:'colQ1',d3:'colQ2',de:'colE',ef:'colF',fg:'colG'};
+let nudgeT=null;
+function nudge(l){
+  const c=document.getElementById(NEEDCOL[l]); if(!c) return;
+  c.classList.remove('nudge'); void c.offsetWidth; c.classList.add('nudge');
+  clearTimeout(nudgeT); nudgeT=setTimeout(()=>c.classList.remove('nudge'),1100);
+}
+function goNext(){
+  if(playing) return;
+  if(t<total()){ playing=true; last=0; stopAt=null; return; }   // 멈춘 지점부터 이어서
+  const need=NEEDS[leg];
+  if(need && !need()){ nudge(leg); return; }                    // 답을 아직 안 골랐다
+  const i=ORDER.indexOf(leg);
+  if(i<ORDER.length-1){ leg=ORDER[i+1]; buildRows(); primeFrom(leg); play(); }
+}
+function reset(){
+  document.querySelectorAll('.sel').forEach(e=>e.classList.remove('sel'));
+  document.querySelectorAll('.goBtn.ready').forEach(e=>e.classList.remove('ready'));
+  leg='ab'; buildRows(); primeFrom(leg); intro();
+}
+/* 현재 화면의 애니메이션을 끝으로 보낸다 */
+function skipLeg(){
+  playing=false; stopAt=null;
+  t=total(); scrub.value=1000;
+  render(t);
+  document.querySelectorAll('video').forEach(v=>{
+    if(v.id==='fxDust'||v.id==='fxBurst') return;
+    const d=v.duration||0;
+    if(d && !v.loop){ try{ v.currentTime=Math.max(0,d-0.05); }catch(e){} v.pause(); }
+  });
+}
+skipBtn.addEventListener('click',e=>{ e.stopPropagation(); skipLeg(); });
+/* 첫 화면 — 클릭 없이 타이틀이 스며들고, 홀드가 끝나면 멈춰 사용자를 기다린다 */
+function intro(){
+  t=0; stopAt=PHASES[0].ms;
+  if(reduced){ t=stopAt; stopAt=null; render(t); return; }
+  playing=true; last=0;
+}
+
+$('#modes').innerHTML=MODES.map((m,i)=>
+  `<button data-mode="${m.key}" class="${m.key===mode?'on':''}">${i+1} ${m.name}</button>`).join('');
+function setMode(k){
+  if(!MODES.some(m=>m.key===k)) return;
+  mode=k; leg='ab'; buildRows();
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===k));
+  toast.textContent=MODES.find(m=>m.key===k).name;
+  toast.style.opacity=1; setTimeout(()=>toast.style.opacity=0,1100);
+  play();
+}
+document.querySelectorAll('#modes button').forEach(b=>
+  b.addEventListener('click',e=>{e.stopPropagation();setMode(b.dataset.mode);}));
+
+function buildRows(){
+  $('#rows').innerHTML=TL().map(p=>
+    `<div class="row"><label for="in-${p.id}">${p.name}</label>`
+    +`<span class="bar"><i data-bar="${p.id}"></i></span>`
+    +`<input type="number" id="in-${p.id}" value="${p.ms}" min="0" max="4000" step="50"></div>`).join('');
+  TL().forEach(p=>$('#in-'+p.id).addEventListener('input',e=>{
+    p.ms=Math.max(0,parseInt(e.target.value||0,10)); t=clamp(t,0,total());
+  }));
+  $('#rows').insertAdjacentHTML('beforeend',
+  '<div style="height:1px;background:rgba(201,162,39,.16);margin:9px 0 8px"></div>'
+  +'<div class="row"><label for="fx-base">FX · 평상시</label>'
+  +'<input type="number" id="fx-base" value="'+FX.base+'" min="0" max="100" step="2"></div>'
+  +'<div class="row"><label for="fx-veil">FX · 전환 중</label>'
+  +'<input type="number" id="fx-veil" value="'+FX.veil+'" min="0" max="100" step="5"></div>');
+  $('#fx-base').addEventListener('input',e=>FX.base=clamp(+e.target.value||0,0,100));
+  $('#fx-veil').addEventListener('input',e=>FX.veil=clamp(+e.target.value||0,0,100));
+}
+buildRows();
+
+scrub.addEventListener('input',()=>{playing=false;t=(scrub.value/1000)*total();});
+$('#btnPlay').addEventListener('click',e=>{e.stopPropagation();play();});
+$('#btnHide').addEventListener('click',e=>{e.stopPropagation();panel.classList.add('hidden');});
+$('#btnCopy').addEventListener('click',e=>{
+  e.stopPropagation();
+  const txt='구간: '+(leg==='ab'?'A→B':leg==='bc'?'B→C':leg==='cd'?'C→D':leg==='de'?'D→E':leg==='ef'?'E→F':leg==='fg'?'F→G':leg==='gh'?'G→H':'H→결과')+'\n전환 방식: '+MODES.find(m=>m.key===mode).name+'\n'
+    +TL().map(p=>`${p.name}: ${(p.ms/1000).toFixed(2)}s`).join('\n')
+    +`\n총 길이: ${(total()/1000).toFixed(2)}s`
+    +`\nFX 평상시 ${FX.base}% / 전환 중 ${FX.veil}%`;
+  navigator.clipboard&&navigator.clipboard.writeText(txt);
+  toast.textContent='복사됨 — 영상 프롬프트에 그대로';
+  toast.style.opacity=1; setTimeout(()=>toast.style.opacity=0,1900);
+});
+panel.addEventListener('click',e=>e.stopPropagation());
+$('#stage').addEventListener('click',goNext);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();goNext();}
+  if(e.key==='r'||e.key==='R'){reset();}
+  if(e.key==='s'||e.key==='S'){skipLeg();}
+  if(document.activeElement&&document.activeElement.tagName==='INPUT') return;
+  if(e.key==='1') setMode('dissolve');
+  if(e.key==='2') setMode('drop');
+  if(e.key==='3') setMode('motes');
+  if(e.key==='d'||e.key==='D') panel.classList.toggle('hidden');
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    playing=false; t=clamp(t+(e.key==='ArrowRight'?16.7:-16.7),0,total());
+    scrub.value=(t/total())*1000;
+  }
+});
+addEventListener('wheel',ev=>{
+  if(seaAdd(ev.deltaY*0.0011)) return;      // 표지 이후엔 바다가 차오른다
+  if(!playing) goNext();
+},{passive:true});
+let ty=null;
+addEventListener('touchstart',ev=>{ ty=ev.touches[0].clientY; },{passive:true});
+addEventListener('touchmove',ev=>{
+  if(ty===null) return;
+  const y=ev.touches[0].clientY;
+  seaAdd((ty-y)*0.0024); ty=y;
+},{passive:true});
+addEventListener('touchend',()=>{ ty=null; },{passive:true});
+function handoff(){
+  try{ sessionStorage.setItem('unwrittenMyth', JSON.stringify(answers)); }catch(e){}
+}
+$('#toResult').addEventListener('click',handoff);
+rCta.addEventListener('click',ev=>{ ev.stopPropagation(); seaRun(); });
+/* CTA를 누르면 부드럽게 차오른다 */
+function seaRun(){
+  if(!(leg==='hr' && t>=total())) return;
+  const step=()=>{ if(seaP<1){ seaAdd(0.016); requestAnimationFrame(step); } };
+  step();
+}
+
+[fxDust,fxBurst].forEach(v=>{
+  v.playbackRate=0.55;
+  v.play().catch(()=>{});                       // 자동재생 차단 시 첫 클릭에서 재시도
+});
+$('#stage').addEventListener('click',()=>[fxDust,fxBurst].forEach(v=>v.play().catch(()=>{})),{once:true});
+
+render(0);
+requestAnimationFrame(loop);
+intro();
+primeFrom('ab');                         // 첫 화면이 뜨자마자 B·C 구간부터 확보
+setTimeout(warmQueue, 1200);             // 나머지는 뒤에서 순서대로
+</script>
+</body>
+</html>
