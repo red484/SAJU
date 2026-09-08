@@ -4,13 +4,14 @@
 
 ## 실행
 
-`index.html`을 브라우저에서 열면 메인 홈에서 항로를 탐색할 수 있습니다. `onboarding.html`은 온보딩, `result.html`은 결과 화면입니다. 별도 빌드나 패키지 설치는 필요하지 않습니다. Google Fonts 로딩에는 인터넷 연결이 필요합니다.
+`index.html`은 첫 방문에 온보딩을, 온보딩 완료 후 재방문에는 메인 홈을 엽니다. `home.html`은 메인 홈을 직접 여는 주소입니다. `onboarding.html`은 온보딩, `result.html`은 결과 화면입니다. 별도 빌드나 패키지 설치는 필요하지 않습니다. Google Fonts 로딩에는 인터넷 연결이 필요합니다.
 
 홈에는 경계·방향·골조의 상품 상세와 관심 물음 보관 기능이 있습니다. 관심 물음은 현재 기기의 브라우저에 저장됩니다. 9,900원은 디자인 검토용 예시 가격입니다. 구매 버튼은 준비 안내 화면으로 연결되며 실제 결제·주문·구매 내역을 만들지 않습니다. 심층 기록은 판매 준비 상태입니다. 오늘의 물음은 세 개의 편집된 질문을 기기 날짜에 따라 순환 표시합니다.
 
 ## 주요 파일
 
-- `index.html`, `home.css`, `home.js`: 메인 홈, 탐색, 상세 및 관심 기록
+- `index.html`, `entry.js`, `journey.js`: 첫 방문 및 재방문 분기
+- `home.html`, `home.css`, `home.js`: 메인 홈, 탐색, 상세 및 관심 기록
 - `onboarding.html`: 입력 및 영상 온보딩
 - `result.html`, `result.js`: 결과 화면과 인터랙션
 - `result.css`, `reading.css`, `poster.css`, `epic.css`: 화면 스타일
@@ -38,3 +39,5 @@ node --check result.js
 Sites 정적 게시용 파일은 `node build.mjs`로 생성합니다.
 
 홈 2차 디자인: 검정·금색 편집 지면, 판화 표지, 경계·방향·골조의 짧은 글과 이어 읽기. 글은 디자인을 위한 창작 예시이며 개인 사주 해석이 아닙니다.
+
+첫 방문 흐름은 `/` → `onboarding.html` → `result.html` → `home.html`입니다. 온보딩에서 결과로 이동할 때 완료 여부만 현재 기기에 저장합니다. 같은 기기의 재방문은 홈으로 이동하며, 저장이 차단된 환경에서도 결과의 홈 버튼은 홈을 직접 엽니다. 기존 `index.html?question=...` 링크는 유지됩니다.

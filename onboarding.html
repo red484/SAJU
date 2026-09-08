@@ -441,6 +441,7 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
 }
 @media (max-width:640px){#help{display:none}}
 </style>
+<script src="journey.js"></script>
 </head>
 <body>
 
@@ -1697,6 +1698,7 @@ addEventListener('touchmove',ev=>{
 },{passive:true});
 addEventListener('touchend',()=>{ ty=null; },{passive:true});
 function handoff(){
+  window.SajuJourney.complete();
   try{ sessionStorage.setItem('unwrittenMyth', JSON.stringify(answers)); }catch(e){}
 }
 $('#toResult').addEventListener('click',handoff);
