@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>제0관측소 · 다음 항로</title>
+<meta name="description" content="당신의 신화를 다시 읽고, 다음 물음의 항로를 발견하는 곳.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="home.css"><script src="home.js" defer></script>
+</head>
+<body>
+<header class="site-head"><a class="brand" href="index.html">제0관측소<small>ZERO OBSERVATORY</small></a><nav aria-label="메인"><a href="#explore">항로 탐색</a><a href="#library">나의 기록</a></nav></header>
+<main>
+<section class="opening">
+ <img class="ocean" src="assets/ddcbf437386444.jpg" alt="빛이 내려앉은 바다">
+ <div class="opening-inner"><p class="overline">THE NEXT VOYAGE</p><h1>제0관측소</h1><p class="opening-copy">한 편의 신화가 끝난 자리에서,<br>다음 물음이 시작됩니다.</p>
+ <a class="continue" href="result.html"><span><small>다시 펼치는 기록 · SAMPLE</small><strong>당신의 신화, 귀환</strong></span><span class="arrow" aria-hidden="true">↗</span></a>
+ </div><div class="horizon"><span>발견하지 못한 나의 다음 장</span><span>01 — 03</span></div>
+</section>
+<section class="explore section" id="explore">
+ <header class="section-title"><div><p class="overline">QUESTIONS THAT REMAIN</p><h2>어떤 물음 앞에<br>서 있습니까.</h2></div><p>경계를 다시 긋고, 방향을 찾고,<br>남은 것으로 삶을 세우는 일.</p></header>
+ <div class="filters" role="group" aria-label="항로 분류"><button type="button" data-filter="all" aria-pressed="true">모든 항로</button><button type="button" data-filter="boundary" aria-pressed="false">경계</button><button type="button" data-filter="direction" aria-pressed="false">방향</button><button type="button" data-filter="structure" aria-pressed="false">골조</button></div>
+ <div class="products">
+ <article class="product" data-kind="boundary"><button class="product-open" data-product="boundary"><div class="art"><img src="assets/scene-descent-v1.jpg" alt="어두운 신전 속 이난나의 조각상"><span class="art-label">I / THE THRESHOLD</span></div><div class="product-copy"><p class="category">경계 <span>심층 기록 · 준비 중</span></p><h3>나를 지키던 이름이<br>짐이 되었을 때.</h3><p>나를 지키던 이름 가운데 이제는 짐이 된 것은 무엇입니까.</p><span class="detail-link">이 물음 따라가기 <span aria-hidden="true">↗</span></span></div></button></article>
+ <article class="product" data-kind="direction"><button class="product-open" data-product="direction"><div class="art"><img src="assets/scene-return-v1.jpg" alt="항해의 신화 속 오디세우스"><span class="art-label">II / THE COMPASS</span></div><div class="product-copy"><p class="category">방향 <span>심층 기록 · 준비 중</span></p><h3>그리운 곳과<br>머물 곳은 다릅니다.</h3><p>돌아가고 싶은 곳과 지금 머물 수 있는 곳은 어디서 갈라집니까.</p><span class="detail-link">이 물음 따라가기 <span aria-hidden="true">↗</span></span></div></button></article>
+ <article class="product" data-kind="structure"><button class="product-open" data-product="structure"><div class="art"><img src="assets/scene-remains-v1.jpg" alt="남은 세계를 바라보는 길가메시"><span class="art-label">III / THE FOUNDATION</span></div><div class="product-copy"><p class="category">골조 <span>심층 기록 · 준비 중</span></p><h3>남은 것은,<br>시작할 재료입니다.</h3><p>남은 것 가운데 내 손으로 다시 다룰 수 있는 것은 무엇입니까.</p><span class="detail-link">이 물음 따라가기 <span aria-hidden="true">↗</span></span></div></button></article>
+ </div>
+</section>
+<section class="library section" id="library"><header class="section-title"><div><p class="overline">YOUR ARCHIVE</p><h2>언제든, 다시 돌아올 곳.</h2></div></header><a class="archive-row" href="result.html"><span class="archive-no">01472</span><div><small>샘플 기록</small><h3>완성된 당신의 신화</h3><p>출항에서 이타카까지, 다섯 장의 항로.</p></div><span class="arrow" aria-hidden="true">↗</span></a><div class="saved-head"><h3>마음에 남은 물음</h3><span>이 기기에 보관</span></div><div id="saved-list"><p class="empty">아직 담아둔 물음이 없습니다.</p></div></section>
+<section class="new-voyage"><p class="overline">A NEW BEGINNING</p><h2>처음부터 나의 항로를 읽고 싶다면.</h2><a href="onboarding.html" class="button">새 신화 시작하기 <span aria-hidden="true">↗</span></a></section>
+</main>
+<footer><a class="brand" href="index.html">제0관측소</a><p>아직 쓰이지 않은 당신의 신화.</p><small>현재 제공되는 기록은 샘플입니다. 심층 기록은 판매 준비 중입니다.</small></footer>
+<dialog id="product-dialog" aria-labelledby="dialog-title"><button class="close" aria-label="닫기" type="button">×</button><img id="dialog-image" alt=""><div class="dialog-copy"><p id="dialog-category" class="overline"></p><h2 id="dialog-title"></h2><p id="dialog-question"></p><div class="included"><h3>이 기록에서 마주할 것</h3><ul id="dialog-topics"></ul></div><p class="availability">판매 준비 중 · 가격 공개 예정</p><button id="save-question" class="button" type="button">이 물음 담아두기</button><a id="sample-link" class="sample-link" href="result.html">연결된 신화 먼저 읽기 <span aria-hidden="true">↗</span></a><p id="save-status" role="status"></p></div></dialog>
+</body></html>

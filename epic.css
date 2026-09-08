@@ -146,3 +146,9 @@
   #s5 .chap .chapter-prose p,#s5 .chap .prose-heading,#s4 .side p{color:#111}
   #entry{font-size:10pt}
 }
+/* Return to the observatory after the final chapter. */
+.next-questions{display:grid;gap:0;margin-top:40px;text-align:left}
+.next-questions a{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid #bda16b66;color:#f5eedf;text-decoration:none;font-size:16px}
+.observatory-home{display:block;margin:30px auto;color:#e3c991;font-size:16px;text-align:center;text-decoration:underline;text-underline-offset:6px}
+.next-questions a:focus-visible,.observatory-home:focus-visible{outline:2px solid #e3c991;outline-offset:5px}
+@media print{.next-questions,.observatory-home{display:none}}
