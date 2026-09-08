@@ -152,3 +152,12 @@
 .observatory-home{display:block;margin:30px auto;color:#e3c991;font-size:16px;text-align:center;text-decoration:underline;text-underline-offset:6px}
 .next-questions a:focus-visible,.observatory-home:focus-visible{outline:2px solid #e3c991;outline-offset:5px}
 @media print{.next-questions,.observatory-home{display:none}}
+
+/* Each final question opens its own deep reading from the returning home. */
+.next-questions a{padding:26px 0;transition:color .2s}
+.next-questions a small{display:block;font:12px/1.5 var(--kr);color:#cbb485;letter-spacing:.04em;margin-bottom:12px}
+.next-questions a strong{display:block;font:400 18px/1.9 var(--serif);max-width:30em;word-break:keep-all}
+.next-questions a em{display:block;font:400 13px/1.6 var(--kr);color:#cbb485;margin-top:15px}
+.next-questions a:hover{color:#e6c38c}
+.observatory-home{border:1px solid #c6ab7470;padding:18px 22px;text-decoration:none;background:#ddc38c12;line-height:1.8}
+@media(prefers-reduced-motion:reduce){.next-questions a{transition:none}}
