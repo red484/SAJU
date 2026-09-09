@@ -25,7 +25,8 @@ function notify(message) {
 }
 function persist() { try { localStorage.setItem(key, JSON.stringify(saved)); return true; } catch { return false; } }
 function renderSaved() {
-  document.querySelector('#saved-count').textContent = saved.length;
+  const count = document.querySelector('#saved-count');
+  if (count) count.textContent = saved.length;
   document.querySelectorAll('[data-save]').forEach(button => {
     const id = button.dataset.save;
     button.setAttribute('aria-pressed', String(saved.includes(id)));
@@ -33,9 +34,10 @@ function renderSaved() {
   });
   if (active) document.querySelector('#save-question').textContent = saved.includes(active) ? '담아둔 물음 · 보관 취소' : '이 물음 담아두기';
   const list = document.querySelector('#saved-list');
+  if (!list) return;
   list.replaceChildren();
   if (!saved.length) {
-    const p = document.createElement('p'); p.className = 'empty'; p.textContent = '다시 읽고 싶은 물음에 책갈피를 꽂아두세요.'; list.append(p); return;
+    const p = document.createElement('p'); p.className = 'empty'; p.textContent = '아직 책갈피한 물음이 없습니다.'; const link = document.createElement('a'); link.href = 'readings.html'; link.className = 'text-link'; link.textContent = '마음에 남는 기록 찾아보기 ↗'; list.append(p, link); return;
   }
   saved.forEach(id => {
     const row = document.createElement('div'); row.className = 'saved-row';
@@ -96,17 +98,39 @@ document.querySelector('#checkout-back').onclick = () => {
   document.querySelector('#checkout-preview').hidden = true;
   document.querySelector('#purchase-button').focus();
 };
-document.querySelectorAll('[data-filter]').forEach(button => button.onclick = () => {
-  document.querySelectorAll('[data-filter]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-  document.querySelectorAll('[data-kind]').forEach(card => card.hidden = button.dataset.filter !== 'all' && card.dataset.kind !== button.dataset.filter);
-  document.querySelector('#filter-status').textContent = button.dataset.filter === 'all' ? '전체 기록 3개' : products[button.dataset.filter].name + ' 기록 1개';
-});
-document.querySelector('a[href="#boundary-reading"]').addEventListener('click', () => document.querySelector('[data-filter="boundary"]').click());
+function filterReadings(id, updateUrl = false) {
+  if (!document.querySelector('[data-filter]') || (id !== 'all' && !validProduct(id))) return;
+  document.querySelectorAll('[data-filter]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.filter === id)));
+  document.querySelectorAll('[data-kind]').forEach(card => card.hidden = id !== 'all' && card.dataset.kind !== id);
+  document.querySelector('#filter-status').textContent = id === 'all' ? '전체 기록 3개' : products[id].name + ' 기록 1개';
+  if (updateUrl) {
+    const url = new URL(location.href); url.searchParams.set('chapter', id); history.replaceState(null, '', url);
+  }
+}
+document.querySelectorAll('[data-filter]').forEach(button => button.onclick = () => filterReadings(button.dataset.filter, true));
 window.addEventListener('storage', event => {
   if (event.key !== key && event.key !== null) return;
   try { const value = JSON.parse(event.newValue || '[]'); saved = Array.isArray(value) ? [...new Set(value.filter(validProduct))] : []; } catch { saved = []; }
   renderSaved();
 });
+window.addEventListener('pageshow', () => {
+  try { const value = JSON.parse(localStorage.getItem(key) || '[]'); saved = Array.isArray(value) ? [...new Set(value.filter(validProduct))] : []; } catch { saved = []; }
+  renderSaved();
+});
 renderSaved();
+const params = new URLSearchParams(location.search);
+let preferred = 'boundary';
+if (window.SajuCalendarModel) {
+  let answers = {}, preference;
+  try { answers = JSON.parse(sessionStorage.getItem('unwrittenMyth')); } catch {}
+  try { preference = localStorage.getItem('zero-observatory-calendar-interest'); } catch {}
+  const model = window.SajuCalendarModel;
+  const interest = model.initialInterest(answers, preference);
+  preferred = model.intentions[interest].product;
+  const basis = document.querySelector('#recommendation-basis');
+  if (basis) basis.textContent = `‘${model.intentions[interest].label}’에 맞춰 골랐습니다.`;
+}
+const chapter = params.get('chapter') || params.get('question');
+filterReadings(chapter === 'all' || validProduct(chapter) ? chapter : preferred);
 const initial = new URLSearchParams(location.search).get('question');
 if (validProduct(initial)) showProduct(initial);

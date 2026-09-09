@@ -40,13 +40,12 @@ assert.deepEqual(M.profile(['invalid']), { recover: '', absence: '' });
 assert.ok(M.reading(date(2026, 9, 9), 'invalid').title);
 
 // The calendar does not break the existing static home/product integration.
-const html = readFileSync(new URL('./home.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('./calendar.html', import.meta.url), 'utf8');
 const js = readFileSync(new URL('./calendar.js', import.meta.url), 'utf8');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'Duplicate element ids');
 for (const [, id] of js.matchAll(/\$\('([^']+)'\)/g)) assert.ok(ids.includes(id), `Missing calendar target ${id}`);
 for (const [, product] of html.matchAll(/data-product="([^"]+)"/g)) assert.ok(['boundary', 'direction', 'structure'].includes(product));
-assert.ok(html.indexOf('src="home.js') < html.indexOf('src="calendar.js'));
 assert.ok(html.indexOf('src="calendar-model.js"') < html.indexOf('src="calendar.js'));
 assert.ok(html.includes('실제 사주를 계산하거나'));
 console.log('PASS: calendar dates, leap years, year boundaries, remaining-week recommendations, personalization, safe defaults and home integration');

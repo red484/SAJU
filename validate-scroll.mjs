@@ -40,7 +40,7 @@ h.media.matches=false;h.media.change();h.flush();assert(h.scenes.every(s => s.cl
 for(const options of [{reduced:true},{height:500},{fontSize:24}]) {const fallback=harness(options);assert(fallback.scenes.every(s => !s.classes.has('is-animated')));assert.equal(fallback.frames.size,0);}
 h.document.hidden=true;h.events.scroll.fn();assert.equal(h.frames.size,0);
 h.document.hidden=false;h.documentEvents.visibilitychange();h.flush();
-const html=fs.readFileSync(new URL('./home.html',import.meta.url),'utf8');
+const html=['readings.html','library.html'].map(name=>fs.readFileSync(new URL(name,import.meta.url),'utf8')).join('');
 assert.equal((html.match(/data-scroll-scene=/g)||[]).length,1);
 assert.equal((html.match(/class="fragment-panel"/g)||[]).length,4);
 assert.match(html,/<section class="descent-spread" aria-labelledby="descent-title">/);

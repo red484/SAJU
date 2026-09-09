@@ -50,8 +50,6 @@
       ? '처음 기록에서 답한 회복 방식과 지금 필요한 것, 현재 선택한 관심사를 참고합니다. 위의 관심사를 바꾸면 추천 날짜와 기록도 달라집니다.'
       : '위에서 고른 관심사에 맞춰 날짜별 안내와 읽을 기록을 추천합니다. 처음 방문하면 ‘나를 돌보는 일’로 시작합니다.';
     document.querySelectorAll('[data-intention]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.intention === interest)));
-    $('recommendation-basis').textContent = `‘${config.label}’에 맞춰 골랐습니다.`;
-    document.querySelector(`[data-filter="${config.product}"]`).click();
     renderPractice(todayReading.action);
 
   }
@@ -62,7 +60,7 @@
     $('day-title').textContent = entry.title;
     $('day-copy').textContent = entry.copy;
     $('day-action').textContent = entry.action;
-    $('day-product').dataset.product = entry.product;
+    $('day-product').href = `readings.html?question=${entry.product}`;
     if (announce) $('calendar-status').textContent = `${fullDate(selected)}. ${entry.label}. ${entry.title}`;
   }
   function renderMonth() {
@@ -138,5 +136,6 @@
     }
   });
   renderWeek(); renderMonth(); renderReading();
+  if (location.hash === '#day-reading') revealCalendar($('day-reading'));
   if (location.hash === '#calendar-panel') $('calendar-panel').open = true;
 })();
