@@ -55,9 +55,20 @@ function toggleSaved(id) {
   if (dialog.open) document.querySelector('#save-status').textContent = message;
   else notify(message);
 }
+function renderResponse() {
+  if (!active || !window.SajuPersonal) return;
+  const state = window.SajuPersonal.get();
+  document.querySelector('#response-yes').setAttribute('aria-pressed', String(state.feedback[active]?.value === 'yes'));
+  document.querySelector('#response-later').setAttribute('aria-pressed', String(state.feedback[active]?.value === 'later'));
+}
 function showProduct(id) {
   if (!validProduct(id)) return;
   active = id;
+  const personal = window.SajuPersonal;
+  if (personal) personal.update(s => { s.recent = [{ id, date: personal.model.dayKey(new Date()) }, ...s.recent.filter(e => e.id !== id)].slice(0,12); });
+  document.querySelector('#reading-note').value = personal?.get().notes[id]?.text || '';
+  document.querySelector('#response-status').textContent = '';
+  renderResponse();
   const p = products[id];
   document.querySelector('#dialog-title').textContent = p.title;
   document.querySelector('#dialog-category').textContent = p.name + ' / DEEP ARCHIVE';
@@ -75,6 +86,22 @@ function showProduct(id) {
   document.body.classList.add('modal-open');
   dialog.scrollTop = 0;
 }
+for (const [buttonId, value] of [['response-yes','yes'],['response-later','later']]) {
+  document.getElementById(buttonId).addEventListener('click', () => {
+    const P = window.SajuPersonal;
+    if (!active || !P) return;
+    const stored = P.update(s => { if (s.feedback[active]?.value === value) delete s.feedback[active]; else s.feedback[active] = { value, date: P.model.dayKey(new Date()) }; });
+    renderResponse();
+    document.querySelector('#response-status').textContent = stored ? '반응을 다음 추천에 반영했습니다.' : '이 화면에서만 반영됩니다. 기기 저장을 사용할 수 없어요.';
+  });
+}
+document.querySelector('#save-reading-note').addEventListener('click', () => {
+  const P=window.SajuPersonal;
+  if (!active || !P) return;
+  const text=document.querySelector('#reading-note').value.trim();
+  const stored=P.update(s=>{if(text)s.notes[active]={text,date:P.model.dayKey(new Date())};else delete s.notes[active];});
+  document.querySelector('#response-status').textContent=stored?(text?'메모를 서재에 남겼습니다.':'메모를 지웠습니다.'):'이 화면에서만 메모를 기억합니다.';
+});
 document.querySelectorAll('[data-product]').forEach(button => button.onclick = () => showProduct(button.dataset.product));
 document.querySelectorAll('[data-save]').forEach(button => button.onclick = () => toggleSaved(button.dataset.save));
 document.querySelector('.close').onclick = () => dialog.close();
@@ -130,6 +157,9 @@ if (window.SajuCalendarModel) {
   const basis = document.querySelector('#recommendation-basis');
   if (basis) basis.textContent = `‘${model.intentions[interest].label}’에 맞춰 골랐습니다.`;
 }
+const personalRecommendation = window.SajuPersonal?.recommend();
+if (personalRecommendation) preferred = personalRecommendation.id || 'all';
+if (personalRecommendation && document.querySelector('#recommendation-basis')) document.querySelector('#recommendation-basis').textContent = personalRecommendation.reason;
 const chapter = params.get('chapter') || params.get('question');
 filterReadings(chapter === 'all' || validProduct(chapter) ? chapter : preferred);
 const initial = new URLSearchParams(location.search).get('question');
