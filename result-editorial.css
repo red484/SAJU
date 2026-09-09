@@ -1,0 +1,55 @@
+/* A printed edition of the same mythology, with live and selectable text. */
+@media screen{
+ :root{--editorial-paper:#f5f2e9;--editorial-red:#942a2d;--editorial-ink:#211f1c;--poster-display:'Bodoni Moda',Didot,'Times New Roman',serif}
+ .result-edition{position:relative;z-index:10;width:calc(100% - 2 * var(--gutter));margin:0 auto;padding:24px 0 18px;border-bottom:1px solid #5b453f66;display:flex;align-items:center;justify-content:space-between;gap:24px;color:#392d26}
+ .result-edition a{font:500 18px/1.5 var(--kr);text-decoration:none;color:inherit;display:flex;gap:24px;align-items:center}.result-edition a span{font-size:13px;color:#7c302a}.result-edition>span{font:12px/1.6 var(--util)}
+ .result-edition a:focus-visible{outline:2px solid var(--editorial-red);outline-offset:6px}
+ #s1 .bigline{color:var(--editorial-red)}
+ #s1 .summary{border-block:1px solid #62402b66;padding-block:26px}
+ #s2 .sequence-heading{background:var(--editorial-paper);color:var(--editorial-ink);padding-top:70px;padding-bottom:55px;border-top:3px double #462f26;border-bottom:1px solid #462f26;gap:24px 50px}
+ #s2 .sequence-heading h2{font-size:clamp(30px,4vw,57px);color:var(--editorial-ink);letter-spacing:-.045em}
+ #s2 .sequence-heading .eyebrow,#s2 .sequence-heading .eyebrow em{color:var(--editorial-red)}
+ #s2 .sequence-heading>p:last-child{color:#66584d;font-size:16px;line-height:1.95}
+ .poster-scene{height:92svh;max-height:1100px;min-height:660px}
+ .poster-art{mask-image:none;-webkit-mask-image:none;filter:saturate(.8)}
+ .scene-imprint{position:absolute;left:32px;right:32px;top:26px;z-index:3;display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #f5ead270;padding-bottom:15px;color:#fff2d9;font:12px/1.6 var(--util);text-shadow:0 1px 5px #17171b}
+ .scene-folio{position:absolute;top:90px;left:28px;z-index:2;font:italic 400 clamp(45px,7vw,95px)/.9 var(--serif);color:#f5ead2b8;letter-spacing:-.07em}
+ .poster-title{inset:0;text-shadow:none;display:flex;flex-direction:column;justify-content:end;align-items:center;padding:55px 32px 70px}
+ .poster-word{position:absolute;top:19%;left:0;right:0;font:900 clamp(90px,17vw,245px)/.9 var(--poster-display);letter-spacing:-.09em;background:none;-webkit-text-fill-color:currentColor;color:#f9f0d7;filter:none;opacity:.93}
+ .descent .poster-word{color:#e4a392}
+ .return .poster-word{font-style:italic;font-weight:400;font-family:var(--serif);font-size:clamp(120px,22vw,300px);letter-spacing:-.075em;top:22%}
+ .remains .poster-word{color:#efdfbc;top:16%}
+ .poster-title h3{position:relative;font-size:clamp(26px,3.4vw,45px);line-height:1.55;letter-spacing:-.05em;margin:0;color:#fff4de;text-shadow:0 2px 18px #17151b}
+ .poster-scene::after{inset:0;background:linear-gradient(#11131948,transparent 22%,transparent 45%,#151217db 100%)}
+ .poster-caption{background:var(--editorial-paper);padding-block:32px 45px;border-bottom:1px solid #c3b6a3}
+ .poster-caption .poster-mast span:first-child,.poster-caption .poster-coordinate{color:#785c4b}
+ .poster-caption .poster-mast span:last-child{color:var(--editorial-red)}
+ .poster-caption blockquote,.poster-caption .poster-prose p,.poster-caption .poster-prose b{color:#302b26;font-size:16px;line-height:1.95;font-weight:400}
+ .poster-caption .poster-reading summary{color:#80312b;border-color:#b2a591;min-height:52px;font-size:15px}
+ .poster-caption .poster-prose .bookQuote{color:var(--editorial-red);font-size:27px;font-style:italic}
+ .poster-caption .poster-reading summary:hover{color:#211c17}.poster-caption .poster-reading summary:focus-visible{outline-color:var(--editorial-red)}
+ #thread::before{background:linear-gradient(var(--editorial-paper),#eff1ed)}
+ #thread .sequence-closing{color:#685949;font-size:17px}
+ #thread .sequence-closing strong{color:var(--editorial-red);font-size:clamp(27px,3.1vw,42px)}
+ #s5 .reading-heading{border-top:1px solid #5e645857;border-bottom:1px solid #5e645857}
+ #s5 .reading-heading h2{font-size:clamp(32px,4.3vw,62px);letter-spacing:-.055em}
+ #s5 .chapter-head{border-top:1px solid currentColor;padding-top:23px;display:grid;grid-template-columns:85px 1fr;align-items:end;column-gap:24px}
+ #s5 .chap .chapter-head .no{grid-row:1/3;font:italic 400 80px/.9 var(--serif);letter-spacing:-.07em;color:var(--story-gold)}
+ #s5 .chap .chapter-head h3{font:400 clamp(30px,4vw,55px)/1 var(--serif);letter-spacing:-.04em;margin:0;word-break:normal}
+ #s5 .chap .chapter-head .kr{grid-column:2;margin-top:12px;font-size:14px}
+ #s5 .chap .pull{letter-spacing:-.035em}
+ #dusk .next-questions{counter-reset:question}
+ #dusk .next-questions a{counter-increment:question;position:relative;padding:32px 0 32px 72px}
+ #dusk .next-questions a::before{content:'0' counter(question);position:absolute;top:32px;left:0;font:italic 42px/1 var(--serif);color:#e4b798}
+ #dusk .next-questions a strong{font-size:20px}
+ .observatory-home{background:#f2e8d5;color:#2b2220;border-color:#f2e8d5;font-size:17px;padding:20px;max-width:650px;margin-inline:0;transition:background .2s}
+ .observatory-home:hover{background:#e8cfaf}
+}
+@media screen and (max-width:760px){
+ .result-edition{width:calc(100% - 48px);padding-block:20px 15px}.result-edition>span{display:none}.result-edition a{justify-content:space-between;width:100%;font-size:17px}
+ #s2 .sequence-heading{padding:44px 24px 36px;gap:20px}.poster-scene{height:78svh;min-height:540px;max-height:780px}.scene-imprint{left:20px;right:20px;top:20px;font-size:12px;gap:15px}.scene-imprint>span:first-child{max-width:100px}.scene-imprint>span:last-child{max-width:115px;text-align:right}.scene-folio{top:92px;left:20px;font-size:48px}.poster-title{padding:36px 24px 50px}.poster-word{font-size:18vw;top:29%}.return .poster-word{font-size:24vw;top:29%}.remains .poster-word{top:28%}.poster-title h3{font-size:27px}.poster-caption{padding:26px 24px 34px}.poster-caption blockquote,.poster-caption .poster-prose p{font-size:16px}
+ #s5 .chapter-head{grid-template-columns:53px 1fr;gap:14px;align-items:center;padding-top:20px}#s5 .chap .chapter-head .no{font-size:55px}#s5 .chap .chapter-head h3{font-size:31px}#s5 .chap .chapter-head .kr{margin-top:0}
+ #dusk .next-questions a{padding:27px 0 27px 45px}#dusk .next-questions a::before{font-size:32px;top:27px}#dusk .next-questions a strong{font-size:18px}.observatory-home{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.observatory-home{transition:none}}
+@media print{.result-edition,.scene-imprint,.scene-folio{display:none}}
