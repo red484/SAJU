@@ -1,6 +1,6 @@
 /* Scroll position drives transforms only. Native wheel, touch and keyboard scrolling stay intact. */
 (() => {
-  const scenes = [...document.querySelectorAll('[data-scroll-scene]')];
+  const scenes = [...document.querySelectorAll('[data-scroll-scene="fragments"]')];
   if (!scenes.length) return;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const clamp = n => Math.max(0, Math.min(1, n));
@@ -19,15 +19,9 @@
       return {scene, progress: clamp(-rect.top / Math.max(1, rect.height - height))};
     });
     for (const {scene, progress: p} of samples) {
-      if (scene.dataset.scrollScene === 'descent') {
-        set(scene, '--drop', Math.pow(smooth((p - .08) / .75), 1.7));
-        set(scene, '--intro', 1 - smooth((p - .28) / .28));
-        set(scene, '--outro', smooth((p - .63) / .23));
-      } else {
-        const joined = smooth((p - .08) / .66);
-        set(scene, '--spread', 1 - joined);
-        set(scene, '--joined', joined);
-      }
+      const joined = smooth((p - .08) / .66);
+      set(scene, '--spread', 1 - joined);
+      set(scene, '--joined', joined);
     }
   }
   function schedule() {

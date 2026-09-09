@@ -14,7 +14,7 @@ function harness({ reduced = false, height = 800, fontSize = 16 } = {}) {
       querySelector() {return {getBoundingClientRect: () => ({height})};}
     };
   };
-  const scenes = [scene('descent'), scene('fragments')];
+  const scenes = [scene('fragments')];
   const media = {matches: reduced, addEventListener(name, fn) {this.change = fn;}};
   const document = {querySelectorAll: () => scenes, documentElement: {}, body: {}, hidden: false, addEventListener(name, fn) {documentEvents[name] = fn;}};
   const context = vm.createContext({document, innerHeight: height, window: {matchMedia: () => media},
@@ -28,11 +28,10 @@ function harness({ reduced = false, height = 800, fontSize = 16 } = {}) {
   flush();return {scenes, events, media, document, documentEvents, frames, context, flush, at};
 }
 const h = harness();
-assert.equal(h.scenes[0].values['--drop'], 0);
-assert.equal(h.scenes[1].values['--spread'], 1);
-h.at(.5); const middle = h.scenes[0].values['--drop']; assert(middle > 0 && middle < 1);
-h.at(1); assert.equal(h.scenes[0].values['--outro'], 1); assert.equal(h.scenes[0].values['--intro'],0);assert.equal(h.scenes[1].values['--spread'],0);
-h.at(0); assert.equal(h.scenes[0].values['--drop'],0);assert.equal(h.scenes[0].values['--intro'],1);
+assert.equal(h.scenes[0].values['--spread'], 1);
+h.at(.5); const middle = h.scenes[0].values['--joined']; assert(middle > 0 && middle < 1);
+h.at(1); assert.equal(h.scenes[0].values['--spread'],0); assert.equal(h.scenes[0].values['--joined'],1);
+h.at(0); assert.equal(h.scenes[0].values['--spread'],1);
 for (const progress of [-2, .3, 3]) {h.at(progress);for(const s of h.scenes) for(const value of Object.values(s.values)) assert(value >= 0 && value <= 1);}
 assert.equal(h.events.scroll.options.passive,true);assert(!h.events.wheel && !h.events.touchmove);
 h.events.scroll.fn();h.events.scroll.fn();assert.equal(h.frames.size,1);h.flush();
@@ -42,7 +41,10 @@ for(const options of [{reduced:true},{height:500},{fontSize:24}]) {const fallbac
 h.document.hidden=true;h.events.scroll.fn();assert.equal(h.frames.size,0);
 h.document.hidden=false;h.documentEvents.visibilitychange();h.flush();
 const html=fs.readFileSync(new URL('./home.html',import.meta.url),'utf8');
-assert.equal((html.match(/data-scroll-scene=/g)||[]).length,2);
+assert.equal((html.match(/data-scroll-scene=/g)||[]).length,1);
 assert.equal((html.match(/class="fragment-panel"/g)||[]).length,4);
+assert.match(html,/<section class="descent-spread" aria-labelledby="descent-title">/);
+assert(html.indexOf('class="descent-title-block"') > html.indexOf('class="descent-illustration"'));
+assert.doesNotMatch(source,/--drop|--intro|--outro/);
 assert.match(html,/href="#explore">기록으로 건너가기/);assert.match(html,/href="#library">나의 서재로/);
 console.log('PASS: scroll forward/back, range bounds, frame coalescing, passive input, reduced motion, small-screen/large-type fallbacks, skip links');
