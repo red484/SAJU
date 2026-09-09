@@ -11,3 +11,15 @@
  .sanctuary-home .site-head nav{gap:15px}.sanctuary-home .site-head nav a{font-size:12px}.sanctuary-home .site-head nav a:last-child{display:none}.site-head nav a[href="home.html"]{display:none}.site-head{gap:16px}.page-heading{padding-block:22px 28px}.page-back{margin-bottom:20px}.page-heading h1{font-size:36px}.page-heading>p:last-child{font-size:15px}.home-glimpses{padding-block:30px 38px}.today-preview{padding:25px 22px;gap:15px}.today-preview h2{font-size:25px}.today-preview p:not(.overline){font-size:13px}.preview-date-mark{display:none}.preview-link{font-size:14px;margin-top:20px}.reading-preview{padding-block:35px}.reading-preview>header{display:block;margin-bottom:18px}.reading-preview h2{font-size:25px}.reading-preview>header .text-link{margin-top:12px}.preview-chapters{grid-template-columns:1fr}.preview-chapters>a{display:grid;grid-template-columns:75px minmax(0,1fr);padding:22px 0;gap:12px 15px}.preview-chapters>a+a{border-left:0;border-top:1px solid var(--line)}.preview-chapters .preview-index{padding-top:6px}.preview-chapters h3{font-size:21px;line-height:1.7}.preview-chapters h3 br{display:none}.preview-chapters>a>span:last-child{grid-column:2;font-size:13px}.library-preview{grid-template-columns:1fr;gap:12px;padding-bottom:25px}.library-preview h2{font-size:24px}.library-preview .preview-link{margin-top:8px}.page-calendar .almanac{padding-top:25px}.page-readings .explore{padding-top:25px}.page-library .library{padding-top:25px}
 }
 @media(prefers-reduced-motion:reduce){.preview-chapters>a{transition:none}}
+/* Home interludes preview the reading room and archive, without their controls. */
+.page-home .home-glimpses{padding-bottom:35px}
+.page-home .descent-spread{margin-block:0 20px}
+.page-home .descent-illustration{max-width:1100px;margin-inline:auto}
+.page-home .descent-title-block{margin-top:max(-308px,-28vw);padding-bottom:55px}
+.page-home .descent-title-block .reading-link{margin-top:24px}
+.page-home .reading-preview{padding-block:35px 65px;scroll-margin-top:28px}
+.page-home .fragments-scene{margin-block:0}
+.page-home .site-footer{padding-top:50px}
+@media(max-width:700px){.page-home .home-glimpses{padding-bottom:25px}.page-home .descent-title-block{padding-bottom:35px}.page-home .descent-title-block .reading-link{font-size:14px}.page-home .reading-preview{padding-block:25px 40px}.page-home .site-footer{padding-top:35px}}
+
+@media(max-width:700px) and (max-height:740px){.page-home .fragments-scene.is-animated .fragment-window{height:25svh}}

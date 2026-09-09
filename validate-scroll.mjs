@@ -40,11 +40,11 @@ h.media.matches=false;h.media.change();h.flush();assert(h.scenes.every(s => s.cl
 for(const options of [{reduced:true},{height:500},{fontSize:24}]) {const fallback=harness(options);assert(fallback.scenes.every(s => !s.classes.has('is-animated')));assert.equal(fallback.frames.size,0);}
 h.document.hidden=true;h.events.scroll.fn();assert.equal(h.frames.size,0);
 h.document.hidden=false;h.documentEvents.visibilitychange();h.flush();
-const html=['readings.html','library.html'].map(name=>fs.readFileSync(new URL(name,import.meta.url),'utf8')).join('');
+const html=['home.html'].map(name=>fs.readFileSync(new URL(name,import.meta.url),'utf8')).join('');
 assert.equal((html.match(/data-scroll-scene=/g)||[]).length,1);
 assert.equal((html.match(/class="fragment-panel"/g)||[]).length,4);
 assert.match(html,/<section class="descent-spread" aria-labelledby="descent-title">/);
 assert(html.indexOf('class="descent-title-block"') > html.indexOf('class="descent-illustration"'));
 assert.doesNotMatch(source,/--drop|--intro|--outro/);
-assert.match(html,/href="#explore">기록으로 건너가기/);assert.match(html,/href="#library">나의 서재로/);
+assert.match(html,/href="#home-readings">기록으로 건너가기/);assert.match(html,/href="library.html">나의 서재로/);
 console.log('PASS: scroll forward/back, range bounds, frame coalescing, passive input, reduced motion, small-screen/large-type fallbacks, skip links');
