@@ -1,7 +1,22 @@
-.for-you{padding-top:40px}
-.for-you-header{display:flex;align-items:center;gap:22px;padding-bottom:20px;border-bottom:1px solid var(--line)}.for-you-header h2{font:400 25px/1.7 var(--serif);letter-spacing:-.04em}.for-you-header>span{margin-left:auto;font-size:12px;color:var(--muted)}
-.for-you-spread{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:45px;padding-block:28px 12px}.for-you-letter{min-width:0;padding-block:5px}.for-you-address{font:14px/1.9 var(--serif);color:#7c795e}#home-personal-question{font:400 clamp(25px,2.6vw,36px)/1.75 var(--serif);letter-spacing:-.05em;margin-top:12px;word-break:keep-all;overflow-wrap:anywhere;max-width:19em}#home-personal-reason{font:14px/1.95 var(--sans);color:var(--muted);max-width:39em;margin-top:16px;word-break:keep-all;overflow-wrap:anywhere}.for-you-letter .reading-link{font-size:14px;margin-top:17px;min-height:44px}
-.for-you-book{display:flex;flex-direction:column;align-self:center;min-width:0;padding:24px 29px;background:#354a3c;color:#f2ead4;border-left:4px solid #ad9762;transition:background .2s}.for-you-book:hover{background:#405740}.book-register{font:12px/1.8 var(--sans);color:#d0c4a2}.book-title{display:flex;align-items:center;gap:25px;padding-block:21px}.book-numeral{font:300 68px/1 var(--display);color:#c5b17e;flex-shrink:0}.book-title h3{font:400 27px/1.7 var(--serif);letter-spacing:-.035em;white-space:pre-line;overflow-wrap:anywhere;color:#f4eedb}.book-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;border-top:1px solid #c6b58066;padding-top:15px;font-size:13px;color:#e0d2ae}.book-bottom>span:last-child{font-size:22px}
-@media(max-width:800px){.for-you-spread{gap:25px}.for-you-book{padding:22px}.book-title{gap:20px}.book-title h3{font-size:24px}}
-@media(max-width:700px){.for-you{padding-top:30px}.for-you-header{gap:12px;flex-wrap:wrap;padding-bottom:17px}.for-you-header>.overline{font-size:12px}.for-you-header h2{font-size:22px}.for-you-header>span{display:none}.for-you-spread{grid-template-columns:1fr;gap:23px;padding-top:20px}.for-you-address{font-size:13px}#home-personal-question{font-size:25px;line-height:1.75;margin-top:9px}#home-personal-reason{font-size:13px;margin-top:12px}.for-you-letter .reading-link{margin-top:13px}.for-you-book{padding:18px 22px}.book-title{padding-block:13px;gap:23px}.book-numeral{font-size:53px}.book-title h3{font-size:23px;line-height:1.65}.book-title h3 br{display:none}.book-bottom{padding-top:12px;font-size:13px}}
-@media(prefers-reduced-motion:reduce){.for-you-book{transition:none}}
+.for-you { padding: 46px 0 12px; }
+.for-you-kicker { color: #817653; font-size: 12px; letter-spacing: .06em; }
+.for-you-letter { padding: 16px 0 25px; }
+#home-personal-question { max-width: 24em; font: 400 clamp(25px, 2.6vw, 34px)/1.65 var(--serif); letter-spacing: -.045em; word-break: keep-all; overflow-wrap: anywhere; }
+#home-personal-reason { max-width: 42em; margin-top: 16px; font: 14px/1.9 var(--sans); color: var(--muted); word-break: keep-all; overflow-wrap: anywhere; }
+.for-you-letter .reading-link { margin-top: 22px; min-height: 44px; font-size: 14px; }
+.for-you-book { display: flex; align-items: center; gap: 20px; padding: 23px 0 12px; border-top: 1px solid var(--line); }
+.book-numeral { display: grid; place-items: center; flex: 0 0 43px; height: 59px; border-left: 3px solid #ae9766; background: #354a3c; color: #d9c798; font: 400 25px/1 var(--display); }
+.book-copy { min-width: 0; }
+.book-register { display: block; color: var(--muted); font: 11px/1.8 var(--sans); }
+.book-copy h3 { margin-top: 5px; color: #515747; font: 400 18px/1.6 var(--serif); letter-spacing: -.025em; word-break: keep-all; overflow-wrap: anywhere; }
+.book-arrow { margin-left: auto; color: #817653; font-size: 22px; }
+.for-you-book:hover .book-copy h3 { color: #827044; }
+@media (max-width: 700px) {
+  .for-you { padding-top: 36px; }
+  .for-you-letter { padding-top: 14px; padding-bottom: 22px; }
+  #home-personal-question { font-size: 25px; }
+  #home-personal-reason { font-size: 13px; margin-top: 14px; }
+  .for-you-letter .reading-link { margin-top: 18px; }
+  .for-you-book { gap: 16px; padding-top: 20px; }
+  .book-copy h3 { font-size: 17px; }
+}
