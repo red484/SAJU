@@ -1,5 +1,5 @@
 const products = {
-  boundary: { name: '경계', title: '나를 지키던 이름이\n짐이 되었을 때.', question: '나를 지키던 이름 가운데 이제는 짐이 된 것은 무엇입니까.', image: 'inanna-editorial-v2.png', chapter: 3, topics: ['나를 설명해 온 역할과 이름', '보호와 구속을 가르는 경계', '다시 받아들일 것과 내려놓을 것'] },
+  boundary: { name: '경계', title: '나를 지키던 이름이\n짐이 되었을 때.', question: '나를 지키던 이름 가운데 이제는 짐이 된 것은 무엇입니까.', image: 'scene-descent-v1.jpg', chapter: 3, topics: ['나를 설명해 온 역할과 이름', '보호와 구속을 가르는 경계', '다시 받아들일 것과 내려놓을 것'] },
   direction: { name: '방향', title: '그리운 곳과\n머물 곳은 다릅니다.', question: '돌아가고 싶은 곳과 지금 머물 수 있는 곳은 어디서 갈라집니까.', image: 'scene-return-v1.jpg', chapter: 4, topics: ['돌아보고 있는 선택의 갈림길', '그리움과 필요의 서로 다른 방향', '지금의 내가 머물 수 있는 자리'] },
   structure: { name: '골조', title: '남은 것은,\n시작할 재료입니다.', question: '남은 것 가운데 내 손으로 다시 다룰 수 있는 것은 무엇입니까.', image: 'scene-remains-v1.jpg', chapter: 5, topics: ['지금 손에 남아 있는 자원', '다시 세울 삶의 기준', '나의 권한으로 시작하는 작은 재건'] }
 };
