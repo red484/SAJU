@@ -21,7 +21,11 @@
   };
   function renderWeek() {
     const config = M.intentions[interest], days = M.week(current), best = M.bestDay(current, interest, answers);
+    const todayReading = M.reading(current, interest, answers);
     $('almanac-today').textContent = fullDate(current);
+    $('almanac-title').textContent = todayReading.title;
+    $('today-message').textContent = todayReading.action;
+    $('today-interest').textContent = `${config.label} · 예시 안내`;
     $('week-range').textContent = `${shortDate(days[0])} — ${shortDate(days[6])}`;
     $('week-title').textContent = config.title;
     $('best-day').textContent = String(best.getDate()).padStart(2, '0');
@@ -90,10 +94,22 @@
   $('calendar-prev').addEventListener('click', () => changeMonth(-1));
   $('calendar-next').addEventListener('click', () => changeMonth(1));
   $('calendar-today').addEventListener('click', () => { current = M.noon(new Date()); renderWeek(); selectDate(current); });
+  function revealCalendar(target) {
+    $('calendar-panel').open = true;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+  }
+  document.querySelectorAll('a[href="#calendar-panel"]').forEach(link => link.addEventListener('click', event => {
+    event.preventDefault();
+    revealCalendar($('calendar-panel').querySelector('summary'));
+  }));
+  $('open-today-reading').addEventListener('click', () => {
+    current = M.noon(new Date()); renderWeek(); selectDate(current);
+    revealCalendar($('day-reading'));
+  });
   $('open-best-day').addEventListener('click', () => {
     selectDate(M.bestDay(current, interest, answers));
-    $('day-reading').focus({ preventScroll: true });
-    $('day-reading').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+    revealCalendar($('day-reading'));
   });
   document.querySelectorAll('[data-intention]').forEach(button => button.addEventListener('click', () => {
     if (!M.valid(button.dataset.intention)) return;
@@ -113,4 +129,5 @@
     }
   });
   renderWeek(); renderMonth(); renderReading();
+  if (location.hash === '#calendar-panel') $('calendar-panel').open = true;
 })();
