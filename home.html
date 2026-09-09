@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="home.css"><link rel="stylesheet" href="scroll-scenes.css"><link rel="stylesheet" href="editorial.css"><link rel="stylesheet" href="sanctuary.css"><link rel="stylesheet" href="calendar.css?v=20260909-3"><link rel="stylesheet" href="home-refinement.css?v=20260909-4"><link rel="stylesheet" href="pages.css?v=20260909-4">
-<link rel="stylesheet" href="personal.css?v=2"><script src="personal-model.js?v=2" defer></script><script src="personal-store.js?v=2" defer></script><script src="scroll-scenes.js" defer></script><script src="calendar-model.js" defer></script><script src="home-preview.js?v=20260909-4" defer></script></head>
+<link rel="stylesheet" href="personal.css?v=2"><link rel="stylesheet" href="home-personal.css?v=2"><script src="personal-model.js?v=2" defer></script><script src="personal-store.js?v=2" defer></script><script src="scroll-scenes.js" defer></script><script src="calendar-model.js" defer></script><script src="home-preview.js?v=20260909-7" defer></script></head>
 <body class="sanctuary-home page-home"><a class="skip-link" href="#main">본문 바로가기</a>
 <header class="site-head wrap"><a class="brand" href="home.html"><span class="brand-zero" aria-hidden="true">0</span> 제0관측소</a><nav aria-label="메인"><a href="home.html" class="active" aria-current="page">홈</a><a href="calendar.html">나의 달력</a><a href="readings.html">기록 읽기</a><a href="library.html">나의 서재</a></nav><span class="head-caption">삶을 읽는 또 하나의 방식</span></header>
 <main id="main">
@@ -28,6 +28,14 @@
 </section>
 <section class="home-glimpses wrap" aria-label="나의 다음 장 미리보기">
  <a class="today-preview" href="calendar.html#day-reading"><div><p class="overline"><span id="preview-date">오늘</span> · 나의 달력</p><h2 id="preview-message">오늘, 당신을 위한 작은 여백.</h2><p id="preview-context">당신의 관심사에 맞춘 하루의 안내를 만나보세요.</p><span class="preview-link">오늘의 안내 보기 <span aria-hidden="true">↗</span></span></div><span class="preview-date-mark" id="preview-day" aria-hidden="true">09</span></a>
+
+ <section class="for-you" aria-labelledby="for-you-title">
+  <header class="for-you-header"><p class="overline">FOR YOU</p><h2 id="for-you-title">지금, 당신의 다음 장.</h2><span id="for-you-state">아직 알아가는 중</span></header>
+  <div class="for-you-spread">
+   <div class="for-you-letter"><p class="for-you-address" id="for-you-address">당신에게 먼저 묻고 싶어요.</p><h3 id="home-personal-question">지금, 마음은 어디에 머물러 있나요?</h3><p id="home-personal-reason">지금의 마음을 들려주세요.</p><a href="library.html#profile" class="reading-link" id="home-profile-link">내 이야기 들려주기 ↗</a></div>
+   <a class="for-you-book" id="for-you-book" href="readings.html?chapter=boundary" aria-labelledby="for-you-book-title"><span class="book-register" id="for-you-book-label">먼저 펼쳐볼 기록 / 경계</span><div class="book-title"><span class="book-numeral" id="for-you-book-number" aria-hidden="true">I</span><h3 id="for-you-book-title">나를 지키는<br>마음의 경계.</h3></div><span class="book-bottom"><span id="for-you-book-link">이 기록 미리 읽기</span><span aria-hidden="true">↗</span></span></a>
+  </div>
+ </section>
 </section>
 <section class="descent-spread" aria-labelledby="descent-title">
  <div class="scene-top wrap"><span>INTERLUDE I / 하강</span><a href="#home-readings">기록으로 건너가기 <span aria-hidden="true">↓</span></a></div>
@@ -47,7 +55,7 @@
  <a href="readings.html?chapter=boundary"><span class="preview-index">01 / 경계</span><h3>나를 지키던 이름이 <br>무거워질 때.</h3><span>관계와 나 <span aria-hidden="true">↗</span></span></a>
  <a href="readings.html?chapter=direction"><span class="preview-index">02 / 방향</span><h3>그리운 곳과 <br>머물 곳 사이.</h3><span>선택과 머무름 <span aria-hidden="true">↗</span></span></a>
  <a href="readings.html?chapter=structure"><span class="preview-index">03 / 골조</span><h3>빈손인 줄 알았던 <br>날에 남은 것.</h3><span>일과 삶 <span aria-hidden="true">↗</span></span></a>
- </div><div class="home-personal-recommendation"><p id="home-personal-reason">지금 마음에 맞는 기록을 골라드릴게요.</p><a href="library.html#profile" class="text-link" id="home-profile-link">나에게 맞추기 ↗</a></div></section>
+ </div></section>
 <section class="scroll-scene fragments-scene" data-scroll-scene="fragments" aria-labelledby="fragments-title">
  <div class="scene-stage">
   <div class="scene-top wrap"><span>INTERLUDE II / 이어지는 항로</span><a href="library.html">나의 서재로 <span aria-hidden="true">↗</span></a></div>
