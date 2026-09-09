@@ -14,17 +14,29 @@
   const shortDate = date => `${date.getMonth() + 1}.${String(date.getDate()).padStart(2, '0')}`;
   const fullDate = date => date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
   const stateLabel = date => M.key(date) === M.key(current) ? '오늘' : '';
-  const reasons = {
-    relationship: { boundary: '관계 속에서 내 마음을 지키고 싶다면.', direction: '누구 곁에 머물고 싶은지 궁금하다면.', structure: '함께 쌓아온 것들을 돌아보고 싶다면.' },
-    work: { structure: '새 출발에 가져갈 내 힘을 발견하도록.', direction: '다음 선택의 기준이 필요할 때.', boundary: '일과 나 사이에 선을 긋고 싶다면.' },
-    rest: { direction: '지금 편히 머물 곳을 찾고 있으니까.', boundary: '쉬어도 괜찮다고 말하기 어려운 날에.', structure: '속도를 늦추고 남은 힘을 살펴보도록.' }
-  };
+  const practiceKey = 'zero-observatory-today-intention';
+  let practice = null;
+  try { practice = JSON.parse(localStorage.getItem(practiceKey)); } catch {}
+  function renderPractice(action) {
+    $('practice-action').textContent = action;
+    const chosen = practice?.date === M.key(current) && practice?.interest === interest;
+    $('practice-done').setAttribute('aria-pressed', String(chosen));
+    $('practice-button-label').textContent = chosen ? '오늘의 약속으로 남겼어요' : '오늘 해볼게요';
+    $('practice-feedback').textContent = chosen ? '마음이 바뀌면 다시 눌러 지울 수 있어요.' : '작은 선택 하나면 충분해요.';
+  }
+  $('practice-done').addEventListener('click', () => {
+    practice = practice?.date === M.key(current) && practice?.interest === interest ? null : { date: M.key(current), interest };
+    let stored = true;
+    try { localStorage.setItem(practiceKey, JSON.stringify(practice)); } catch { stored = false; }
+    renderPractice(M.reading(current, interest, answers).action);
+    if (!stored) $('practice-feedback').textContent = '이 화면에서만 기억할게요. 지금은 기기에 저장할 수 없습니다.';
+  });
   function renderWeek() {
     const config = M.intentions[interest], days = M.week(current), best = M.bestDay(current, interest, answers);
     const todayReading = M.reading(current, interest, answers);
     $('almanac-today').textContent = fullDate(current);
     $('almanac-title').textContent = todayReading.title;
-    $('today-message').textContent = todayReading.action;
+    $('today-message').textContent = todayReading.copy.match(/^.*?[.!?](?:\s|$)/)?.[0].trim() || todayReading.copy;
     $('today-interest').textContent = `${config.label} · 예시 안내`;
     $('week-range').textContent = `${shortDate(days[0])} — ${shortDate(days[6])}`;
     $('week-title').textContent = config.title;
@@ -38,13 +50,10 @@
       ? '처음 기록에서 답한 회복 방식과 지금 필요한 것, 현재 선택한 관심사를 참고합니다. 위의 관심사를 바꾸면 추천 날짜와 기록도 달라집니다.'
       : '위에서 고른 관심사에 맞춰 날짜별 안내와 읽을 기록을 추천합니다. 처음 방문하면 ‘나를 돌보는 일’로 시작합니다.';
     document.querySelectorAll('[data-intention]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.intention === interest)));
-    config.order.forEach((id, index) => {
-      const button = $('personal-reading-list').querySelector(`[data-product="${id}"]`);
-      button.querySelector('.personal-reading-number').textContent = String(index + 1).padStart(2, '0');
-      button.querySelector('.personal-reading-reason').textContent = reasons[interest][id];
-      $('personal-reading-list').append(button);
-    });
-    $('recommendation-basis').textContent = `‘${config.label}’에 마음이 향한 당신에게.`;
+    $('recommendation-basis').textContent = `‘${config.label}’에 맞춰 골랐습니다.`;
+    document.querySelector(`[data-filter="${config.product}"]`).click();
+    renderPractice(todayReading.action);
+
   }
   function renderReading(announce = false) {
     const entry = M.reading(selected, interest, answers);

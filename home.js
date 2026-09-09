@@ -101,17 +101,7 @@ document.querySelectorAll('[data-filter]').forEach(button => button.onclick = ()
   document.querySelectorAll('[data-kind]').forEach(card => card.hidden = button.dataset.filter !== 'all' && card.dataset.kind !== button.dataset.filter);
   document.querySelector('#filter-status').textContent = button.dataset.filter === 'all' ? '전체 기록 3개' : products[button.dataset.filter].name + ' 기록 1개';
 });
-const dailyPrompts = [
- { id: 'boundary', text: '이번에는 내 사정을 먼저 살펴봐도 될까요.' },
- { id: 'direction', text: '돌아가고 싶은 곳에서, 지금의 나도 살 수 있을까요.' },
- { id: 'structure', text: '새로 구하지 않아도, 다시 쓸 수 있는 것은 무엇일까요.' }
-];
-const today = new Date();
-const daily = dailyPrompts[Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86400000) % dailyPrompts.length];
-document.querySelector('.daily-date').textContent = String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
-document.querySelector('.daily-question').textContent = daily.text;
-document.querySelector('.daily [data-product]').dataset.product = daily.id;
-document.querySelector('a[href="#boundary-reading"]').addEventListener('click', () => document.querySelector('[data-filter="all"]').click());
+document.querySelector('a[href="#boundary-reading"]').addEventListener('click', () => document.querySelector('[data-filter="boundary"]').click());
 window.addEventListener('storage', event => {
   if (event.key !== key && event.key !== null) return;
   try { const value = JSON.parse(event.newValue || '[]'); saved = Array.isArray(value) ? [...new Set(value.filter(validProduct))] : []; } catch { saved = []; }
