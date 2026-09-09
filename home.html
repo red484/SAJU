@@ -8,12 +8,42 @@
 <meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="home.css"><link rel="stylesheet" href="scroll-scenes.css"><link rel="stylesheet" href="editorial.css"><link rel="stylesheet" href="sanctuary.css"><script src="home.js" defer></script><script src="scroll-scenes.js" defer></script>
+<link rel="stylesheet" href="home.css"><link rel="stylesheet" href="scroll-scenes.css"><link rel="stylesheet" href="editorial.css"><link rel="stylesheet" href="sanctuary.css"><link rel="stylesheet" href="calendar.css"><script src="home.js" defer></script><script src="scroll-scenes.js" defer></script><script src="calendar-model.js" defer></script><script src="calendar.js" defer></script>
 </head>
 <body class="sanctuary-home">
 <a class="skip-link" href="#main">본문 바로가기</a>
-<header class="site-head wrap"><a class="brand" href="home.html"><span class="brand-zero" aria-hidden="true">0</span> 제0관측소</a><nav aria-label="메인"><a href="#explore">기록 읽기</a><a href="#library">나의 서재</a></nav><span class="head-caption">삶을 읽는 또 하나의 방식</span></header>
+<header class="site-head wrap"><a class="brand" href="home.html"><span class="brand-zero" aria-hidden="true">0</span> 제0관측소</a><nav aria-label="메인"><a href="#my-calendar">나의 달력</a><a href="#explore">기록 읽기</a><a href="#library">나의 서재</a></nav><span class="head-caption">삶을 읽는 또 하나의 방식</span></header>
 <main id="main">
+<section class="almanac wrap" id="my-calendar" aria-labelledby="almanac-title">
+ <header class="almanac-head"><div><p class="almanac-eyebrow">YOUR PERSONAL ALMANAC</p><h2 id="almanac-title">당신의 때를 읽다.</h2></div><p class="almanac-edition"><span id="almanac-today">나의 하루</span><span>맞춤 달력 · 미리보기</span></p></header>
+ <div class="almanac-intention"><span id="intention-label">지금 마음이 향하는 곳</span><div role="group" aria-labelledby="intention-label"><button type="button" data-intention="relationship" aria-pressed="false">관계와 마음</button><button type="button" data-intention="work" aria-pressed="false">일과 성장</button><button type="button" data-intention="rest" aria-pressed="true">나를 돌보는 일</button></div></div>
+ <div class="almanac-layout">
+  <article class="week-oracle" aria-labelledby="week-title">
+   <div class="oracle-register"><span>THE WEEK AHEAD</span><span id="week-range"></span></div>
+   <p class="oracle-kicker">이번 주, 남은 날 중 추천하는 하루</p><h3 id="week-title">나를 위한 시간을<br>남겨두세요.</h3>
+   <div class="oracle-date"><span id="best-day">—</span><div><span id="best-month"></span><strong id="best-weekday"></strong></div></div>
+   <p id="week-reason"></p><button type="button" id="open-best-day" class="oracle-link">이날의 안내 읽기 <span aria-hidden="true">↗</span></button>
+   <div class="oracle-foot"><span id="week-basis">선택한 관심사에 맞춘 제안</span><span aria-hidden="true">✧</span></div>
+  </article>
+  <div class="calendar-sheet">
+   <div class="calendar-month-head"><h3 id="calendar-month"></h3><div><button type="button" id="calendar-today">오늘</button><button type="button" id="calendar-prev" aria-label="이전 달">←</button><button type="button" id="calendar-next" aria-label="다음 달">→</button></div></div>
+   <div class="calendar-weekdays" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+   <div class="calendar-dates" id="calendar-dates" role="group" aria-labelledby="calendar-month"></div>
+   <div class="calendar-legend"><span><i class="legend-star" aria-hidden="true">✧</i> 추천하는 날</span><span><i class="legend-today" aria-hidden="true"></i> 오늘</span><span>날짜를 눌러 읽어보세요</span></div>
+   <article class="day-reading" id="day-reading" aria-labelledby="day-title" tabindex="-1">
+    <div class="day-reading-meta"><span id="selected-date"></span><span id="selected-mood"></span></div><h3 id="day-title"></h3><p id="day-copy"></p><div class="day-action"><span>작은 실천</span><p id="day-action"></p></div><button type="button" class="text-link" data-product="structure" id="day-product">함께 읽을 기록 <span aria-hidden="true">↗</span></button>
+   </article>
+  </div>
+ </div>
+ <details class="calendar-method"><summary>이 달력은 무엇을 바탕으로 하나요?</summary><p id="calendar-basis"></p><p>현재 날짜별 안내는 관심사와 요일에 따라 구성한 예시입니다. 실제 사주를 계산하거나 미래의 좋고 나쁨을 예측한 결과는 아닙니다. 관심사만 이 기기에 저장하며, 포스텔러의 운세 데이터는 사용하지 않습니다.</p></details>
+ <section class="personal-readings" aria-labelledby="personal-readings-title"><header><div><p class="almanac-eyebrow">CHOSEN FOR YOU</p><h3 id="personal-readings-title">지금의 당신에게, 이 기록.</h3></div><p id="recommendation-basis">관심사에 맞춰 골랐습니다.</p></header><div id="personal-reading-list">
+  <button type="button" data-product="boundary" class="personal-reading"><span class="personal-reading-number">01</span><span><small>경계 · 관계와 나</small><strong>좋은 사람이라는 이름이 무거워질 때</strong><span class="personal-reading-reason"></span></span><span aria-hidden="true">↗</span></button>
+  <button type="button" data-product="direction" class="personal-reading"><span class="personal-reading-number">02</span><span><small>방향 · 선택과 머무름</small><strong>돌아가고 싶은 곳과 머물 수 있는 곳</strong><span class="personal-reading-reason"></span></span><span aria-hidden="true">↗</span></button>
+  <button type="button" data-product="structure" class="personal-reading"><span class="personal-reading-number">03</span><span><small>골조 · 일과 삶</small><strong>다시 시작할 힘은 어디에 남아 있을까</strong><span class="personal-reading-reason"></span></span><span aria-hidden="true">↗</span></button>
+ </div></section>
+ <p id="calendar-status" class="calendar-sr-only" role="status"></p>
+ <noscript><p>달력의 날짜별 안내는 자바스크립트를 켜면 볼 수 있습니다. 아래에서 세 가지 기록을 읽을 수 있습니다.</p></noscript>
+</section>
 <section class="cover sanctuary-cover" aria-labelledby="cover-heading">
  <img class="sanctuary-backdrop" src="assets/sanctuary-v1.png" alt="거대한 대리석 열주와 원형 천창 사이로 빛이 내려오는 성소, 월계관을 든 날개 달린 조각상" width="1536" height="1024" fetchpriority="high">
  <div class="sanctuary-frame wrap">
@@ -67,7 +97,7 @@
 <section class="new-voyage wrap"><div><p class="overline">THE FIRST PAGE</p><h2>아직 나의 첫 기록을 읽지 않았다면.</h2></div><a href="onboarding.html" class="text-link">나의 신화 시작하기 <span aria-hidden="true">↗</span></a></section>
 </main>
 <footer class="site-footer"><div class="wrap"><p class="footer-display" aria-hidden="true">UNWRITTEN<span>is still yours.</span></p><a class="brand" href="home.html"><span class="brand-symbol" aria-hidden="true">✳</span><span>제0관측소<small>ZERO OBSERVATORY</small></span></a><p>아직 쓰이지 않은 당신의 신화.</p><small>디자인 프로토타입 · 표시 가격은 예시이며 실제 결제와 사주 분석은 연결되지 않았습니다.</small><span class="footer-mark">© ZERO OBSERVATORY</span></div></footer>
-<nav class="mobile-nav" aria-label="모바일 메인"><a class="active" href="home.html" aria-current="page"><span aria-hidden="true">⌂</span>홈</a><a href="#explore"><span aria-hidden="true">✧</span>기록 읽기</a><a href="#library"><span aria-hidden="true">▤</span>나의 서재</a></nav>
+<nav class="mobile-nav" aria-label="모바일 메인"><a class="active" href="home.html" aria-current="page"><span aria-hidden="true">⌂</span>홈</a><a href="#my-calendar"><span aria-hidden="true">▦</span>나의 달력</a><a href="#explore"><span aria-hidden="true">✧</span>기록 읽기</a><a href="#library"><span aria-hidden="true">▤</span>나의 서재</a></nav>
 <dialog id="product-dialog" aria-labelledby="dialog-title"><button class="close" aria-label="닫기" type="button">×</button><div class="dialog-art"><img id="dialog-image" alt=""><span id="dialog-art-name"></span></div><div class="dialog-copy"><p id="dialog-category" class="overline"></p><h2 id="dialog-title"></h2><p id="dialog-question"></p><div class="dialog-excerpt"><span>기록의 첫 문장</span><p id="dialog-excerpt"></p></div><div class="included"><h3>이 기록에서 마주할 것</h3><ol id="dialog-topics"></ol></div><a id="sample-link" class="sample-link" href="result.html">연결된 신화 먼저 읽기 <span aria-hidden="true">↗</span></a><div class="purchase-price"><span>심층 기록 한 편 <small>예시 가격</small></span><strong>9,900<span>원</span></strong></div><button id="purchase-button" class="button dark-button" type="button">이 물음의 기록 구매하기 <span aria-hidden="true">↗</span></button><button id="save-question" class="save-button" type="button">이 물음 담아두기</button><p id="save-status" role="status"></p><div id="checkout-preview" hidden><p class="overline">구매 미리보기</p><h3>당신의 다음 장을 준비하고 있어요.</h3><p>심층 기록과 결제는 아직 준비 중입니다.<br>물음을 담아두고 연결된 신화를 먼저 읽어보세요.</p><button id="checkout-back" type="button" class="text-link">상세로 돌아가기 <span aria-hidden="true">↗</span></button></div></div></dialog>
 <div id="toast" class="toast" role="status"></div>
 </body></html>
