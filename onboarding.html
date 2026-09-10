@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>THE UNWRITTEN MYTH — 온보딩 전환 목업 v3</title>
+<title>나의 신화 시작하기 · 제0관측소</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Nanum+Myeongjo:wght@400&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{background:var(--ink);color:var(--ivory);font-family:var(--kr);overflow:hidden;-webkit-font-smoothing:antialiased}
-#stage{position:fixed;inset:0;overflow:hidden;cursor:pointer;background:var(--ink)}
+#stage{position:fixed;inset:0;overflow:clip;cursor:pointer;background:var(--ink)}
 
 /* B가 아래, A가 위 — A가 흩어지거나 떨어지면 그 자리에서 B가 드러남 */
 .scene{position:absolute;inset:0;will-change:transform,opacity,filter;transform-origin:50% 45%;
@@ -253,7 +253,7 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
 
 
 /* ── 결과창 ── 온보딩과 반대되는 밝은 세계. 글자는 어둡게. ───── */
-#sceneR{opacity:0}
+#sceneR{opacity:0;background:#f7f2e7 url("assets/onboarding-result-poster.jpg") center/cover no-repeat}
 #sceneR video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
 /* 검은 암전이 아니라 화이트 아웃으로 넘어간다 */
 #whiteOut{position:absolute;inset:0;background:#f7f2e7;opacity:0;pointer-events:none}
@@ -276,7 +276,7 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
   padding:.5rem 0;transition:opacity .35s}
 #rCta:hover{opacity:.6}
 /* ── 바다 ── 표지에서 아래로 밀면 정원 아래로 수평선이 차오른다 */
-#seaWrap{position:absolute;inset:0;pointer-events:none;opacity:0}
+#seaWrap{position:absolute;inset:0;pointer-events:none;opacity:0;background:#e5e6dd url("assets/onboarding-sea-poster.jpg") center/cover no-repeat}
 #seaWrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #toResult{position:absolute;left:0;right:0;bottom:12%;text-align:center;opacity:0;
   font-family:var(--serif);font-size:.78rem;letter-spacing:.3em;text-indent:.3em;
@@ -447,7 +447,7 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
 
 <svg id="inkDefs" width="0" height="0" aria-hidden="true" style="position:absolute;pointer-events:none"><defs></defs></svg>
 
-<div id="stage" role="button" tabindex="0" aria-label="전환 재생">
+<div id="stage" role="group" tabindex="0" aria-label="나의 신화 시작하기">
   <div class="scene" id="sceneB"><div class="plate" id="b-bg"></div></div>
   <div class="scene" id="sceneA">
     <div class="plate" id="a-bg"></div>
@@ -457,60 +457,60 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
   <div class="scene" id="sceneC">
     <div class="plate" id="c-bg"></div>
     <video id="c-v1" muted playsinline preload="none">
-      <source src="assets/bdb05826d34d03.mp4" type="video/mp4"><source src="assets/bdb05826d34d03.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-c-clip1-hq.mp4" type="video/mp4"></video>
     <video id="c-v2" data-fwd="2.90" muted playsinline preload="none">
-      <source src="assets/553cc9d7f83633.mp4" type="video/mp4"><source src="assets/553cc9d7f83633.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-c-clip2-hq.mp4" type="video/mp4"></video>
   </div>
 
   <div class="scene" id="sceneD">
     <div class="shot" id="d-m1"></div>
     <div class="shot" id="d-m2"></div>
     <video class="shot" id="d-wide" data-fwd="5.0417" muted playsinline preload="none">
-      <source src="assets/6de72af83e11a4.mp4" type="video/mp4"><source src="assets/6de72af83e11a4.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-d-clip-hq.mp4" type="video/mp4"></video>
     <div id="dFlash"></div>
   </div>
 
   <div class="scene" id="sceneE">
     <div class="plate" id="e-bg"></div>
     <video id="e-v1" muted playsinline preload="none">
-      <source src="assets/80bae372cee494.mp4" type="video/mp4"><source src="assets/80bae372cee494.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-e-clip1-hq.mp4" type="video/mp4"></video>
     <video id="e-v2" muted playsinline preload="none">
-      <source src="assets/bba57e49f31011.mp4" type="video/mp4"><source src="assets/bba57e49f31011.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-e-clip2-hq.mp4" type="video/mp4"></video>
     <video id="e-v3" data-fwd="1.6458" muted playsinline loop preload="none">
-      <source src="assets/7cec9693ca8738.mp4" type="video/mp4"><source src="assets/7cec9693ca8738.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-e-clip3-hq.mp4" type="video/mp4"></video>
   </div>
 
   <div class="scene" id="sceneF">
     <video id="f-v1" muted playsinline preload="none">
-      <source src="assets/d8543d459d53b3.mp4" type="video/mp4"><source src="assets/d8543d459d53b3.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-f-clip1-hq.mp4" type="video/mp4"></video>
     <video id="f-v2" muted playsinline loop preload="none">
-      <source src="assets/ab48d7a0f154c7.mp4" type="video/mp4"><source src="assets/ab48d7a0f154c7.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-f-clip2-hq.mp4" type="video/mp4"></video>
   </div>
 
   <div class="scene" id="sceneG">
     <video id="g-v1" muted playsinline preload="none">
-      <source src="assets/aa38b480ee1d06.mp4" type="video/mp4"><source src="assets/aa38b480ee1d06.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-g-clip1-hq.mp4" type="video/mp4"></video>
     <video id="g-v2" muted playsinline preload="none">
-      <source src="assets/d787090fce8e2e.mp4" type="video/mp4"><source src="assets/d787090fce8e2e.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-g-clip2-hq.mp4" type="video/mp4"></video>
     <video id="g-v3" muted playsinline loop preload="none">
-      <source src="assets/70ad660ed7ebfb.mp4" type="video/mp4"><source src="assets/70ad660ed7ebfb.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-g-clip2-hold-hq.mp4" type="video/mp4"></video>
   </div>
 
   <div class="scene" id="sceneH">
-    <video id="h-v1" muted playsinline preload="none"></video><!-- h-clip1 제거 -->
+    <div id="h-v1" aria-hidden="true"></div><!-- h-clip1 제거 -->
     <video id="h-v2" muted playsinline loop preload="none">
-      <source src="assets/f01821cee15f98.mp4" type="video/mp4"><source src="assets/f01821cee15f98.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-h-clip2-hq.mp4" type="video/mp4"></video>
   </div>
 
   <div class="scene" id="sceneR">
     <video id="r-v1" muted playsinline preload="none">
-      <source src="assets/2c3bd3b90100c0.mp4" type="video/mp4"><source src="assets/2c3bd3b90100c0.mp4" type="video/mp4"></video>
-    <video id="r-v3" muted playsinline loop preload="none">
-      <source src="assets/fb6f59c7e729aa.mp4" type="video/mp4"><source src="assets/fb6f59c7e729aa.mp4" type="video/mp4"></video>
+      <source src="assets/onboarding-r-clip1-hq.mp4" type="video/mp4"></video>
+    <video id="r-v3" poster="assets/onboarding-result-poster.jpg" muted playsinline loop preload="none">
+      <source src="assets/onboarding-r-clip3-hq.mp4" type="video/mp4"></video>
   </div>
   <div id="seaWrap">
-    <video id="seaVid" muted playsinline loop preload="none">
-      <source src="assets/dbacaede262010.mp4" type="video/mp4"><source src="assets/dbacaede262010.mp4" type="video/mp4"></video>
+    <video id="seaVid" poster="assets/onboarding-sea-poster.jpg" muted playsinline loop preload="none">
+      <source src="assets/onboarding-r-sea-hq.mp4" type="video/mp4"></video>
     <div id="chap"><p id="chapNo">I</p><h2 id="chapTitle">THE MYTH</h2></div>
     <p id="seaHint">아래로</p>
   <a id="toResult" href="./result.html">기록을 펼칩니다 &#8594;</a>
@@ -524,9 +524,9 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
   <div class="fx" id="fxConst"></div>
   <div class="fx" id="fxShaft"></div>
   <video class="fx" id="fxDust" autoplay muted loop playsinline preload="auto">
-    <source src="assets/02f939af3d5973.mp4" type="video/mp4"><source src="assets/02f939af3d5973.mp4" type="video/mp4"></video>
+    <source src="assets/onboarding-fx-dust-hq.mp4" type="video/mp4"></video>
   <video class="fx" id="fxBurst" autoplay muted loop playsinline preload="auto">
-    <source src="assets/3392d94998a04f.mp4" type="video/mp4"><source src="assets/3392d94998a04f.mp4" type="video/mp4"></video>
+    <source src="assets/onboarding-fx-burst-hq.mp4" type="video/mp4"></video>
 
   <div id="vignette"></div>
 
@@ -670,14 +670,14 @@ video#d-wide{inset:-10%;width:120%;height:120%;object-fit:cover;object-position:
 <script>
 /* ── 에셋 ── 파일명만. 같은 폴더 → assets/ → images/ 순으로 찾음 ── */
 const ASSETS={
-  '--a-bg':'assets/3d163fdfe4eb35.jpg',
+  '--a-bg':'assets/onboarding-scene-a-hall.jpg',
   '--a-subject':null,
-  '--b-bg':'assets/26d18bbd53d648.jpg',
-  '--c-bg':'assets/02c4310062b540.jpg',
-  '--d-m1':'assets/a9eda1eb83f3a3.jpg',
-  '--d-m2':'assets/33d4afff583e42.jpg',
-  '--q-bg1':'assets/bda7d31ac20619.jpg',
-  '--q-bg2':'assets/8505b1779a8978.jpg',
+  '--b-bg':'assets/onboarding-scene-b-book.jpg',
+  '--c-bg':'assets/onboarding-scene-c-birth.jpg',
+  '--d-m1':'assets/onboarding-scene-d-macro1.jpg',
+  '--d-m2':'assets/onboarding-scene-d-macro2.jpg',
+  '--q-bg1':'assets/onboarding-q-bg1.jpg',
+  '--q-bg2':'assets/onboarding-q-bg2.jpg',
   '--fx-shaft':'assets/ccb2245565fd20.jpg',
   '--fx-const':'assets/6108913ab53a0d.jpg',
 };
@@ -1195,7 +1195,7 @@ function renderFG(t){
   gV3.style.opacity=on3?1:0;                 // 마지막 프레임에서 이어받아 계속 돈다
   syncClip(gV1,p1,on1,false);
   syncClip(gV2,p2,on2,false);
-  if(on3){ if(gV3.paused&&playing) gV3.play().catch(()=>{}); }
+  if(on3){ if(gV3.paused&&!reduced) gV3.play().catch(()=>{}); }
   else if(!gV3.paused){ gV3.pause(); gV3.currentTime=0; }
 
   colG.style.opacity=pX>0?1:0; colG.style.filter='none'; colG.style.transform='none';
@@ -1240,7 +1240,7 @@ function renderGH(t){
 
   const showV2=pR>0||pH>0;
   hV2.style.opacity=showV2?1:0;
-  if(showV2){ if(hV2.paused&&playing) hV2.play().catch(()=>{}); }
+  if(showV2){ if(hV2.paused&&!reduced) hV2.play().catch(()=>{}); }
   else if(!hV2.paused){ hV2.pause(); hV2.currentTime=0; }
 
   colH.style.opacity=pX>0?1:0; colH.style.filter='none'; colH.style.transform='none';
@@ -1283,7 +1283,7 @@ function renderHR(t){
   rV1.style.opacity=on1?1:0;
   rV3.style.opacity=on3?1:0;
   syncClip(rV1,p1,on1,false);
-  if(on3){ if(rV3.paused&&playing) rV3.play().catch(()=>{}); }
+  if(on3){ if(rV3.paused&&!reduced) rV3.play().catch(()=>{}); }
   else if(!rV3.paused){ rV3.pause(); rV3.currentTime=0; }
 
   /* 기록 번호 → (사이를 두고) 제목 → 열람 안내 */
@@ -1360,7 +1360,7 @@ function seaAdd(d){
   }
   const before=seaP;
   seaP=clamp(seaP+d,0,1);
-  if(seaP!==before){ applySea(); return true; }
+  if(seaP!==before){ applySea(); renderHR(t); gateClicks(); return true; }
   return seaP>0;
 }
 function applySea(){
@@ -1433,7 +1433,8 @@ function syncClip(v,p,active,hold){
     if(v.paused){ v.currentTime=clamp(p*fwd,0,full-0.02); v.play().catch(()=>{}); }
   }else{
     if(!v.paused) v.pause();
-    v.currentTime=clamp(p*fwd,0,full-0.02);
+    const target=clamp(p*fwd,0,full-0.02);
+    if(Math.abs(v.currentTime-target)>0.04) v.currentTime=target;
   }
 }
 
@@ -1554,8 +1555,10 @@ function markPhase(t){
   });
 }
 
+let lastRenderKey='';
 let t=0,playing=false,last=0,stopAt=null;   // stopAt: 여기까지만 재생하고 멈춘다
 function loop(ts){
+  if(document.hidden){ last=0; requestAnimationFrame(loop); return; }
   if(!last) last=ts;
   const dt=Math.min(ts-last,60); last=ts;   // 한 프레임에 60ms 이상은 건너뛰지 않는다
   amb+=dt/1000*.35;
@@ -1565,9 +1568,18 @@ function loop(ts){
     else if(t>=total()){ t=total(); playing=false; }
     scrub.value=(t/total())*1000;
   }
-  render(t);
-  gateClicks();
+  const renderKey=[leg,t,playing,mode,seaP,FX.base,FX.veil].join(':');
+  // Let native video loops run without rebuilding every scene while awaiting input.
+  if(playing || renderKey!==lastRenderKey){
+    render(t); gateClicks(); pauseHiddenClips(); lastRenderKey=renderKey;
+  }
   requestAnimationFrame(loop);
+}
+function pauseHiddenClips(){
+  for(const clips of Object.values(CLIPS)) for(const v of clips){
+    const scene=v.closest('.scene');
+    if(!v.paused && ((scene && scene.style.opacity==='0') || v.style.opacity==='0')) v.pause();
+  }
 }
 /* 지금 떠 있는 컬럼만 눌리게 한다 */
 const GATED=[colC,colD,colE,colF,colG,colH,colQ1,colQ2,colR,copyB];
@@ -1575,6 +1587,7 @@ function gateClicks(){
   for(const c of GATED){
     const on=(parseFloat(c.style.opacity)||0)>0.5;
     c.classList.toggle('colOff',!on);
+    if(c.inert===on) c.inert=!on;
   }
 }
 function play(){ if(reduced){t=total();scrub.value=1000;render(t);return;} t=0;playing=true;last=0; }
@@ -1610,8 +1623,7 @@ function skipLeg(){
   playing=false; stopAt=null;
   t=total(); scrub.value=1000;
   render(t);
-  document.querySelectorAll('video').forEach(v=>{
-    if(v.id==='fxDust'||v.id==='fxBurst') return;
+  (CLIPS[leg]||[]).forEach(v=>{
     const d=v.duration||0;
     if(d && !v.loop){ try{ v.currentTime=Math.max(0,d-0.05); }catch(e){} v.pause(); }
   });
@@ -1672,10 +1684,10 @@ $('#btnCopy').addEventListener('click',e=>{
 panel.addEventListener('click',e=>e.stopPropagation());
 $('#stage').addEventListener('click',goNext);
 addEventListener('keydown',e=>{
+  if(e.target.closest('input,select,textarea,button,a,[contenteditable]')) return;
   if(e.code==='Space'){e.preventDefault();goNext();}
   if(e.key==='r'||e.key==='R'){reset();}
   if(e.key==='s'||e.key==='S'){skipLeg();}
-  if(document.activeElement&&document.activeElement.tagName==='INPUT') return;
   if(e.key==='1') setMode('dissolve');
   if(e.key==='2') setMode('drop');
   if(e.key==='3') setMode('motes');
@@ -1686,6 +1698,7 @@ addEventListener('keydown',e=>{
   }
 });
 addEventListener('wheel',ev=>{
+  if(ev.target.closest('input,select,textarea,button,a,#panel')) return;
   if(seaAdd(ev.deltaY*0.0011)) return;      // 표지 이후엔 바다가 차오른다
   if(!playing) goNext();
 },{passive:true});
@@ -1716,7 +1729,9 @@ function seaRun(){
 });
 $('#stage').addEventListener('click',()=>[fxDust,fxBurst].forEach(v=>v.play().catch(()=>{})),{once:true});
 
-render(0);
+document.addEventListener('visibilitychange',()=>{ last=0; lastRenderKey=''; });
+document.querySelectorAll('video').forEach(v=>v.addEventListener('loadeddata',()=>{ lastRenderKey=''; }));
+render(0); gateClicks();
 requestAnimationFrame(loop);
 intro();
 primeFrom('ab');                         // 첫 화면이 뜨자마자 B·C 구간부터 확보
