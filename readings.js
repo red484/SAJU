@@ -128,7 +128,13 @@ document.querySelector('#checkout-back').onclick = () => {
 function filterReadings(id, updateUrl = false) {
   if (!document.querySelector('[data-filter]') || (id !== 'all' && !validProduct(id))) return;
   document.querySelectorAll('[data-filter]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.filter === id)));
-  document.querySelectorAll('[data-kind]').forEach(card => card.hidden = id !== 'all' && card.dataset.kind !== id);
+  const browsing = id === 'all';
+  const catalog = document.querySelector('#reading-catalog');
+  if (catalog) catalog.hidden = !browsing;
+  document.querySelector('.essays').hidden = browsing;
+  document.querySelectorAll('[data-kind]').forEach(card => card.hidden = browsing || card.dataset.kind !== id);
+  const basis = document.querySelector('#recommendation-basis');
+  if (basis) basis.hidden = browsing;
   document.querySelector('#filter-status').textContent = id === 'all' ? '전체 기록 3개' : products[id].name + ' 기록 1개';
   if (updateUrl) {
     const url = new URL(location.href); url.searchParams.set('chapter', id); history.replaceState(null, '', url);

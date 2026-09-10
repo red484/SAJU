@@ -1,0 +1,12 @@
+.reading-catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; padding-block: 12px 50px; }
+.reading-catalog[hidden], .page-readings .essays[hidden] { display: none; }
+.reading-cover { display: block; min-width: 0; border-bottom: 1px solid var(--line); }
+.reading-cover img { display: block; width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; }
+.reading-cover-copy { position: relative; padding: 22px 28px 27px 0; }
+.reading-cover-label { color: var(--gold); font: 12px/1.8 var(--sans); letter-spacing: .07em; }
+.reading-cover h3 { margin-top: 10px; font: 400 clamp(21px, 2vw, 27px)/1.7 var(--serif); letter-spacing: -.045em; word-break: keep-all; overflow-wrap: anywhere; }
+.reading-cover-arrow { position: absolute; right: 0; bottom: 30px; font-size: 23px; color: var(--gold); }
+.reading-cover:hover h3 { color: var(--gold); }
+.reading-cover:focus-visible { outline: 2px solid var(--gold); outline-offset: 6px; }
+@media (max-width: 850px) { .reading-catalog { gap: 20px; } .reading-cover h3 { font-size: 21px; } }
+@media (max-width: 600px) { .reading-catalog { grid-template-columns: 1fr; gap: 30px; padding-bottom: 30px; } .reading-cover-copy { padding-block: 17px 23px; } .reading-cover h3 { font-size: 23px; line-height: 1.6; margin-top: 8px; } }
